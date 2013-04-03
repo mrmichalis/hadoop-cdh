@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 <!-- 
 yarn-site.xml
 -->
+
 <!-- Site specific YARN configuration properties -->
 
 <configuration>

@@ -9,11 +9,11 @@ hdfs-site.xml
 <configuration>
   <property>
     <name>dfs.namenode.name.dir</name>
-    <value>${temp.dir}/dfs-cdh4/name</value>
+    <value>${temp.dir}/dfs/name</value>
   </property>
   <property>
     <name>dfs.datanode.data.dir</name>
-    <value>${temp.dir}/dfs-cdh4/data/1,${temp.dir}/dfs-cdh4/data/2</value>
+    <value>${temp.dir}/dfs/data/1,${temp.dir}/dfs/data/2</value>
   </property>
   <property>
     <name>dfs.datanode.failed.volumes.tolerated</name>
