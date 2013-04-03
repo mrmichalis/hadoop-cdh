@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!-- 
+mapred-site.xml
+-->
+<!-- Site specific YARN configuration properties -->
+
+<configuration>
+  <property>
+    <name>mapreduce.framework.name</name>
+    <value>classic</value>
+  </property>
+  <property>
+    <name>mapreduce.jobtracker.address</name>
+    <value>localhost:8021</value>
+  </property>
+  <property>
+    <name>mapred.job.tracker</name>
+    <value>localhost:8021</value>
+  </property>
+  <property>
+    <name>mapred.tasktracker.shuffle.fadvise</name>
+    <value>false</value>
+  </property>
+</configuration>

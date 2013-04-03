@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<!--
+core-site.xml
+-->
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+  <property>
+    <name>fs.defaultFS</name>
+    <value>hdfs://localhost</value>
+  </property>
+  <property>
+    <name>default.temp.dir</name>
+    <value>default</value>
+  </property>
+  <property>
+    <name>temp.dir</name>
+    <value>file://${user.home}/Work/installs/temp-space/tmp-${default.temp.dir}</value>
+  </property>
+  <property>
+    <name>hadoop.proxyuser.michalis.groups</name>
+    <value>*</value>
+  </property>
+  <property>
+    <name>hadoop.proxyuser.michalis.hosts</name>
+    <value>*</value>
+  </property>
+</configuration>

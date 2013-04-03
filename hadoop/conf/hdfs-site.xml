@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<!-- 
+hdfs-site.xml
+-->
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+  <property>
+    <name>dfs.namenode.name.dir</name>
+    <value>${temp.dir}/dfs-cdh4/name</value>
+  </property>
+  <property>
+    <name>dfs.datanode.data.dir</name>
+    <value>${temp.dir}/dfs-cdh4/data/1,${temp.dir}/dfs-cdh4/data/2</value>
+  </property>
+  <property>
+    <name>dfs.datanode.failed.volumes.tolerated</name>
+    <value>1</value>
+  </property>
+  <property>
+    <name>dfs.namenode.servicerpc-address</name>
+    <value>localhost:8022</value>
+  </property>
+  <property>
+    <name>dfs.namenode.secondary.http-address</name>
+    <value>localhost:50090</value>
+  </property>
+  <property>
+    <name>dfs.webhdfs.enable</name>
+    <value>true</value>
+  </property>
+</configuration>

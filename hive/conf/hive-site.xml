@@ -1,0 +1,7 @@
+<configuration>
+<property>
+      <name>javax.jdo.option.ConnectionURL</name>
+      <value>jdbc:derby:;databaseName=/Users/michalis/Work/temp-space/tmp-default/metastore_db;create=true</value>
+      <description>JDBC connect string for a JDBC metastore</description>
+  </property>
+</configuration>

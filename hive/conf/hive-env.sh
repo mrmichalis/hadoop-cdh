@@ -1,0 +1,1 @@
+export HADOOP_CLASSPATH=$HADOOP_CLASSPATH:`$HADOOP_MR1_HOME/bin/hadoop classpath`
