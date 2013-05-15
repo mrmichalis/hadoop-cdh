@@ -1,74 +1,17 @@
 #!/usr/bin/env bash
-IPADDR=$(ip -f inet addr show dev eth0|awk '$1~/inet/{print $2}'|cut -d/ -f1)
-NETMASK=$(ifconfig eth0|awk -F"Mask:" '$1~/inet /{print $2}')
-HWADDR="$(ifconfig eth0 | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}')"
-HOSTNAME="$(echo $IPADDR | tr '.' '-')"
-DN="lunix.co"
-FQDN="$HOSTNAME.$DN"
-GATEWAY=$(route | grep default | cut -b 17-32 | cut -d " " -f 1)
+set -x
 
-echo "default $GATEWAY" >> /etc/sysconfig/network/routes
-echo "$FQDN" > /etc/HOSTNAME
-
-cat << EOF > /etc/sysconfig/network/ifcfg-eth0
-DEVICE=eth0
-NM_CONTROLLED=no
-IPV6INIT=no
-IPV6_AUTOCONF=no
-USERCTL=no
-ONBOOT=yes
-BOOTPROTO=static
-HWADDR=$HWADDR
-IPADDR=$IPADDR
-NETMASK=$NETMASK
-GATEWAY=$GATEWAY
-STARTMODE=auto
-#RESOLV_MODS=no
-EOF
-
-cat << EOF > /etc/sysconfig/network/ifcfg-eth1
-DEVICE=eth1
-NM_CONTROLLED=no
-IPV6INIT=no
-IPV6_AUTOCONF=no
-USERCTL=no
-ONBOOT=no
-BOOTPROTO=static
-IPADDR=
-NETMASK=
-EOF
-
-cat << EOF >> /etc/sysctl.conf
- 
-#disable_ipv6 content
-net.ipv6.conf.all.disable_ipv6 = 1
-net.ipv6.conf.default.disable_ipv6 = 1
-net.ipv6.conf.lo.disable_ipv6 = 1
-
-#swappiness
-#vm.swappiness = 0
-EOF
-
-cat << EOF > /etc/resolv.conf
-search $DN
-nameserver 8.8.8.8
-nameserver 8.8.4.4
-EOF
-
-cat << EOF >> /etc/hosts
-
-$IPADDR $FQDN $HOSTNAME
-EOF
-echo
-echo "################################"
-echo "# Running Post Configuration   #"
-echo "################################"
-(
 mkdir -p /root/CDH
 
 echo "* Downloading the latest Cloudera Manager installer ..."
 wget -q http://archive.cloudera.com/cm4/installer/latest/cloudera-manager-installer.bin -O /root/CDH/cloudera-manager-installer.bin
 chmod +x /root/CDH/cloudera-manager-installer.bin
+
+echo "* Downloading Downloads MySQL Connector-J ..."
+wget http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.25.tar.gz/from/http://cdn.mysql.com/ -O /root/CDH/mysql-connector-java-5.1.25.tar.gz
+
+echo "* Downloading Java Cryptography Extension (JCE) ..."
+wget --no-check-certificate --no-cookies --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com" http://download.oracle.com/otn-pub/java/jce_policy/6/jce_policy-6.zip -O /root/CDH/jce_policy-6.zip
 
 cat << EOF > /root/CDH/vboxadditions.sh
 #!/usr/bin/env bash
@@ -86,23 +29,16 @@ echo "rm VBoxGuestAdditions_\$VBOX_VERSION.iso"
 EOF
 chmod +x /root/CDH/vboxadditions.sh
 
-cat << EOF > /root/CDH/downloadjava.sh
+cat << EOF > /root/CDH/orajava-install.sh
 #!/usr/bin/env bash
-
-echo "* Downloading Oracle Java SDK 6u31 from Cloudera ..."
-wget http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/4/RPMS/x86_64/jdk-6u31-linux-amd64.rpm -O jdk-6u31-linux-amd64.rpm
-
 echo "* Downloading and Installing Oracle Java SDK 6u41 from Oracle ..."
 JAVA_URL="http://download.oracle.com/otn-pub/java/jdk/6u43-b01/jdk-6u43-linux-x64-rpm.bin"
 JAVA_FILENAME=\$(echo \$JAVA_URL | cut -d/ -f8)
 wget --no-check-certificate --no-cookies --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com" \$JAVA_URL -O /root/CDH/\$JAVA_FILENAME
 chmod +x /root/CDH/\$JAVA_FILENAME
 touch answers && sh \$JAVA_FILENAME < answers && /bin/rm answers
-
-echo "* Downloading Java Cryptography Extension (JCE) ..."
-wget --no-check-certificate --no-cookies --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com" http://download.oracle.com/otn-pub/java/jce_policy/6/jce_policy-6.zip -O /root/CDH/jce_policy-6.zip
 EOF
-chmod +x /root/CDH/downloadjava.sh
+chmod +x /root/CDH/orajava-install.sh
 
 cat << EOF > /root/CDH/getip.sh
 #!/usr/bin/env bash
@@ -126,7 +62,7 @@ cat << EOF > /root/CDH/cm-install.sh
 
 function install {
  if [ \$(egrep -ic "192.168.1.245" "/etc/hosts") -eq 0 ]; then
-   echo "192.168.1.245 archive.cloudera.com" >> /etc/hosts
+  echo "192.168.1.245 archive.cloudera.com" >> /etc/hosts
  fi
  ./cloudera-manager-installer.bin --i-agree-to-all-licenses --noprompt --noreadme --nooptions
 }
@@ -175,12 +111,7 @@ wget --no-check-certificate 'https://raw.github.com/mitchellh/vagrant/master/key
 chmod 600 /root/.ssh/authorized_keys /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
 chown -R root /root/.ssh
 
-echo "* restart NTP ..."
-/etc/init.d/ntp restart 
-
 # Zero out the free space to save space in the final image:
 echo "* Zeroing out unused space ..."
-#dd if=/dev/zero of=/EMPTY bs=1M
-#rm -f /EMPTY
-
-) 2>&1 | /usr/bin/tee /root/post-install.log
+dd if=/dev/zero of=/EMPTY bs=1M
+rm -f /EMPTY
