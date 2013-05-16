@@ -112,6 +112,6 @@ chmod 600 /root/.ssh/authorized_keys /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
 chown -R root /root/.ssh
 
 # Zero out the free space to save space in the final image:
-echo "* Zeroing out unused space ..."
-dd if=/dev/zero of=/EMPTY bs=1M
+#echo "* Zeroing out unused space ..."
+#dd if=/dev/zero of=/EMPTY bs=1M
 rm -f /EMPTY
