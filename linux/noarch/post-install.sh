@@ -7,11 +7,20 @@ echo "* Downloading the latest Cloudera Manager installer ..."
 wget -q http://archive.cloudera.com/cm4/installer/latest/cloudera-manager-installer.bin -O /root/CDH/cloudera-manager-installer.bin
 chmod +x /root/CDH/cloudera-manager-installer.bin
 
-echo "* Downloading Downloads MySQL Connector-J ..."
+cat << EOF > /root/CDH/dep-download.sh
+#!/usr/bin/env bash
+echo "* Downloading MySQL Connector-J ..."
 wget http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.25.tar.gz/from/http://cdn.mysql.com/ -O /root/CDH/mysql-connector-java-5.1.25.tar.gz
+
+echo "* RedHat JDK 6u31 from CM..."
+wget http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/4/RPMS/x86_64/jdk-6u31-linux-amd64.rpm -O /root/CDH/mysql-connector-java-5.1.25.tar.gz
 
 echo "* Downloading Java Cryptography Extension (JCE) ..."
 wget --no-check-certificate --no-cookies --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com" http://download.oracle.com/otn-pub/java/jce_policy/6/jce_policy-6.zip -O /root/CDH/jce_policy-6.zip
+
+EOF
+chmod +x /root/CDH/dep-download.sh
+
 
 cat << EOF > /root/CDH/vboxadditions.sh
 #!/usr/bin/env bash
@@ -93,7 +102,7 @@ exit 0
 EOF
 chmod +x /root/CDH/cm-install.sh
 
-# Make sure Udev doesn't block our network
+# Make sure udev doesn't block our network
 # http://6.ptmc.org/?p=164
 echo "* Cleaning up udev rules ..."
 rm /etc/udev/rules.d/70-persistent-net.rules
@@ -114,4 +123,4 @@ chown -R root /root/.ssh
 # Zero out the free space to save space in the final image:
 #echo "* Zeroing out unused space ..."
 #dd if=/dev/zero of=/EMPTY bs=1M
-rm -f /EMPTY
+#rm -f /EMPTY
