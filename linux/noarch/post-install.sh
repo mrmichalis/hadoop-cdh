@@ -24,15 +24,16 @@ chmod +x /root/CDH/dep-download.sh
 
 cat << EOF > /root/CDH/mysqlinit.sh
 #!/usr/bin/env bash
+service mysqld start
 yum install -y expect
 expect -c " 
-set timeout 10
+set timeout 5
 spawn mysql_secure_installation
  
 expect \"Enter current password for root (enter for none):\"
 send \"\r\"
  
-expect \"Change the root password?\"
+expect \"Set root password?\"
 send \"n\r\"
  
 expect \"Remove anonymous users?\"
