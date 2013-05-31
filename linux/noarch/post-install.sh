@@ -9,11 +9,12 @@ chmod +x /root/CDH/cloudera-manager-installer.bin
 
 cat << EOF > /root/CDH/dep-download.sh
 #!/usr/bin/env bash
+echo "* RedHat JDK 6u31 from CM..."
+wget http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/4/RPMS/x86_64/jdk-6u31-linux-amd64.rpm -O /root/CDH/jdk-6u31-linux-amd64.rpm
+
 echo "* Downloading MySQL Connector-J ..."
 wget http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.25.tar.gz/from/http://cdn.mysql.com/ -O /root/CDH/mysql-connector-java-5.1.25.tar.gz
-
-echo "* RedHat JDK 6u31 from CM..."
-wget http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/4/RPMS/x86_64/jdk-6u31-linux-amd64.rpm -O /root/CDH/mysql-connector-java-5.1.25.tar.gz
+tar xzvf /root/CDH/mysql-connector-java-5.1.25.tar.gz && cp mysql-connector-java-5.1.25/mysql-connector-java-5.1.25-bin.jar /opt/cloudera/parcels/CDH/lib/hive/lib/
 
 echo "* Downloading Java Cryptography Extension (JCE) ..."
 wget --no-check-certificate --no-cookies --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com" http://download.oracle.com/otn-pub/java/jce_policy/6/jce_policy-6.zip -O /root/CDH/jce_policy-6.zip
@@ -21,6 +22,35 @@ wget --no-check-certificate --no-cookies --header "Cookie: gpw_e24=http%3A%2F%2F
 EOF
 chmod +x /root/CDH/dep-download.sh
 
+cat << EOF > /root/CDH/mysqlinit.sh
+#!/usr/bin/env bash
+yum install -y expect
+expect -c " 
+set timeout 10
+spawn mysql_secure_installation
+ 
+expect \"Enter current password for root (enter for none):\"
+send \"\r\"
+ 
+expect \"Change the root password?\"
+send \"n\r\"
+ 
+expect \"Remove anonymous users?\"
+send \"n\r\"
+ 
+expect \"Disallow root login remotely?\"
+send \"n\r\"
+ 
+expect \"Remove test database and access to it?\"
+send \"n\r\"
+ 
+expect \"Reload privilege tables now?\"
+send \"y\r\"
+ 
+expect eof
+" 
+yum remove -y expect
+EOF
 
 cat << EOF > /root/CDH/vboxadditions.sh
 #!/usr/bin/env bash
@@ -91,11 +121,11 @@ set -x
 install
 
 for target in "\$@"; do
-	case "\$target" in
-	lic)
-		(managerSettings)
-		;;	
-	esac
+  case "\$target" in
+  lic)
+    (managerSettings)
+    ;;  
+  esac
 done
 
 exit 0
