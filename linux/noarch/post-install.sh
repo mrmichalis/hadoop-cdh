@@ -51,6 +51,8 @@ expect eof
 " 
 yum remove -y expect
 EOF
+chmod +x /root/CDH/mysqlinit.sh
+
 
 cat << EOF > /root/CDH/vboxadditions.sh
 #!/usr/bin/env bash
