@@ -28,7 +28,7 @@ hdfs-site.xml
     <value>localhost:50090</value>
   </property>
   <property>
-    <name>dfs.webhdfs.enable</name>
+    <name>dfs.webhdfs.enabled</name>
     <value>true</value>
   </property>
 </configuration>

@@ -10,14 +10,19 @@ chmod +x /root/CDH/cloudera-manager-installer.bin
 cat << EOF > /root/CDH/dep-download.sh
 #!/usr/bin/env bash
 echo "* RedHat JDK 6u31 from CM..."
-wget http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/4/RPMS/x86_64/jdk-6u31-linux-amd64.rpm -O /root/CDH/jdk-6u31-linux-amd64.rpm
+command -v java >/dev/null 2>&1 || wget http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/4/RPMS/x86_64/jdk-6u31-linux-amd64.rpm -O /root/CDH/jdk-6u31-linux-amd64.rpm
 
 echo "* Downloading MySQL Connector-J ..."
 wget http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.25.tar.gz/from/http://cdn.mysql.com/ -O /root/CDH/mysql-connector-java-5.1.25.tar.gz
-tar xzvf /root/CDH/mysql-connector-java-5.1.25.tar.gz && cp mysql-connector-java-5.1.25/mysql-connector-java-5.1.25-bin.jar /opt/cloudera/parcels/CDH/lib/hive/lib/
+tar xzvf /root/CDH/mysql-connector-java-5.1.25.tar.gz 
+
+if [ -d /opt/cloudera/parcels/CDH/lib/hive/lib/ ]; then
+  cp mysql-connector-java-5.1.25/mysql-connector-java-5.1.25-bin.jar /opt/cloudera/parcels/CDH/lib/hive/lib/
+fi
 
 echo "* Downloading Java Cryptography Extension (JCE) ..."
 wget --no-check-certificate --no-cookies --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com" http://download.oracle.com/otn-pub/java/jce_policy/6/jce_policy-6.zip -O /root/CDH/jce_policy-6.zip
+unzip /root/CDH/jce_policy-6.zip && cp -f jce/*.jar /usr/java/default/jre/lib/security/
 
 EOF
 chmod +x /root/CDH/dep-download.sh
@@ -32,22 +37,16 @@ spawn mysql_secure_installation
  
 expect \"Enter current password for root (enter for none):\"
 send \"\r\"
- 
 expect \"Set root password?\"
 send \"n\r\"
- 
 expect \"Remove anonymous users?\"
 send \"n\r\"
- 
 expect \"Disallow root login remotely?\"
 send \"n\r\"
- 
 expect \"Remove test database and access to it?\"
 send \"n\r\"
- 
 expect \"Reload privilege tables now?\"
 send \"y\r\"
- 
 expect eof
 " 
 yum remove -y expect
