@@ -15,14 +15,15 @@ command -v java >/dev/null 2>&1 || wget http://archive.cloudera.com/cm4/redhat/6
 echo "* Downloading MySQL Connector-J ..."
 wget http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.25.tar.gz/from/http://cdn.mysql.com/ -O /root/CDH/mysql-connector-java-5.1.25.tar.gz
 tar xzvf /root/CDH/mysql-connector-java-5.1.25.tar.gz 
+[ -d /opt/cloudera/parcels/CDH/lib/hive/lib/ ] && cp /root/CDH/mysql-connector-java-5.1.25/mysql-connector-java-5.1.25-bin.jar /opt/cloudera/parcels/CDH/lib/hive/lib/
 
-if [ -d /opt/cloudera/parcels/CDH/lib/hive/lib/ ]; then
-  cp mysql-connector-java-5.1.25/mysql-connector-java-5.1.25-bin.jar /opt/cloudera/parcels/CDH/lib/hive/lib/
-fi
+echo "* ExtJS library to enable Oozie webconsole ..."
+wget http://extjs.com/deploy/ext-2.2.zip -O /root/CDH/ext-2.2.zip
+[ -d /var/lib/oozie/ext-2.2 ] || unzip /root/CDH/ext-2.2.zip -d /var/lib/oozie/
 
 echo "* Downloading Java Cryptography Extension (JCE) ..."
 wget --no-check-certificate --no-cookies --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com" http://download.oracle.com/otn-pub/java/jce_policy/6/jce_policy-6.zip -O /root/CDH/jce_policy-6.zip
-unzip /root/CDH/jce_policy-6.zip && cp -f jce/*.jar /usr/java/default/jre/lib/security/
+[ -d /usr/java/default/jre/lib/security/ ] && unzip -oj /root/CDH/jce_policy-6.zip -d /usr/java/default/jre/lib/security/
 
 EOF
 chmod +x /root/CDH/dep-download.sh
