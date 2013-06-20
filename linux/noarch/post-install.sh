@@ -10,7 +10,7 @@ chmod +x /root/CDH/cloudera-manager-installer.bin
 
 cat << EOF > /root/CDH/dep-download.sh
 #!/usr/bin/env bash
-echo "* RedHat JDK 6u31 from CM..."
+echo "* Oracle JDK 6u31 from CM..."
 command -v java >/dev/null 2>&1 || wget http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/4/RPMS/x86_64/jdk-6u31-linux-amd64.rpm -O /root/CDH/jdk-6u31-linux-amd64.rpm
 
 echo "* Downloading MySQL Connector-J ..."
@@ -108,6 +108,7 @@ cat << EOF > /root/CDH/cm-install.sh
 function install {
  if [ \$(egrep -ic "192.168.1.245" "/etc/hosts") -eq 0 ]; then
   echo "192.168.1.245 archive.cloudera.com" >> /etc/hosts
+  echo "192.168.1.245 beta.cloudera.com" >> /etc/hosts
  fi
  ./cloudera-manager-installer.bin --i-agree-to-all-licenses --noprompt --noreadme --nooptions
 }
