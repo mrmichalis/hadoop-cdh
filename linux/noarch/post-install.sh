@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -x
 
-sed -i "s/alias/#alias/g" ~/.bashrc 
+sed -i "s/alias/#alias/g" /root/.bashrc 
 mkdir -p /root/CDH
 
 echo "* Downloading the latest Cloudera Manager installer ..."
