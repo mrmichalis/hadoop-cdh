@@ -1,7 +1,13 @@
 #!/usr/bin/env bash
 set -x
 
-sed -i "s/alias/#alias/g" /root/.bashrc 
+sed -i 's/alias/#alias/g' /root/.bashrc 
+#http://www.cyberciti.biz/faq/unable-to-read-consumer-identity-rhn-yum-warning/
+if grep -q -i "Red Hat" /etc/redhat-release ; then
+  sed -i 's/1/0/g' /etc/yum/pluginconf.d/product-id.conf 
+  sed -i 's/1/0/g' /etc/yum/pluginconf.d/subscription-manager.conf
+fi
+
 mkdir -p /root/CDH
 
 echo "* Downloading the latest Cloudera Manager installer ..."
