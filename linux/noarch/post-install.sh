@@ -39,7 +39,7 @@ wget --no-check-certificate --no-cookies --header "Cookie: gpw_e24=http%3A%2F%2F
 EOF
 chmod +x /root/CDH/dep-download.sh
 
-cat << EOF > /root/CDH/mysqlinit.sh
+cat << EOF > /root/CDH/mysql-init.sh
 #!/usr/bin/env bash
 service mysqld start
 yum install -y expect
