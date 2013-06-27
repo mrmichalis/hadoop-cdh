@@ -30,9 +30,9 @@ service mysqld start
 sleep 10
 
 for service in amon smon rman hmon nav hive; do
-  mysql -u root -e "create database $service DEFAULT default character set utf8 collate utf8_general_ci;"
+  mysql -u root -e "create database $service default character set utf8 collate utf8_general_ci;"
   mysql -u root -e "grant all on $service.* TO '$service'@'localhost' IDENTIFIED BY 'password';"
-  mysql -u root -e "grant all on $service.* TO '$service'@'192-168-1-109.lunix.co' IDENTIFIED BY 'password';"
-  mysql -u root -e "grant all on $service.* TO '$service'@'%.lunix.co' IDENTIFIED BY 'password';"
+  mysql -u root -e "grant all on $service.* TO '$service'@'$(hostname -f)' IDENTIFIED BY 'password';"
+  mysql -u root -e "grant all on $service.* TO '$service'@'%.lunix.co' IDENTIFIED BY 'password';"  
 done
 mysql -u root -e 'show databases;'
