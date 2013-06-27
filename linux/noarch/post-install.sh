@@ -80,7 +80,7 @@ done
 mysql -u root -e 'show databases;'
 
 EOF
-chmod +x /root/CDH/mysqlinit.sh
+chmod +x /root/CDH/mysql-init.sh
 
 
 cat << EOF > /root/CDH/vboxadditions.sh
