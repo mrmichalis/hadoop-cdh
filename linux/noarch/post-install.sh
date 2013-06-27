@@ -2,9 +2,9 @@
 set -x
 
 #start -init
-sed -i 's/alias/#alias/g' /root/.bashrc 
+sed -i 's/alias/#alias/g' /root/.bashrc
 #http://www.cyberciti.biz/faq/unable-to-read-consumer-identity-rhn-yum-warning/
-if grep -q -i "Red Hat" /etc/redhat-release ; then
+if grep -q -i "Red Hat" /etc/redhat-release; then
   sed -i 's/1/0/g' /etc/yum/pluginconf.d/product-id.conf 
   sed -i 's/1/0/g' /etc/yum/pluginconf.d/subscription-manager.conf
 fi
@@ -24,17 +24,17 @@ command -v java >/dev/null 2>&1 || wget http://archive.cloudera.com/cm4/redhat/6
 
 echo "* Downloading MySQL Connector-J ..."
 curl -L http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.25.tar.gz/from/http://cdn.mysql.com/ | tar xzv
-[ -d /usr/share/java/ ] && cp /root/CDH/mysql-connector-java-5.1.25/mysql-connector-java-5.1.25-bin.jar /usr/share/java/mysql-connector-java.jar
-[ -d /opt/cloudera/parcels/CDH/lib/hive/lib/ ] && cp /root/CDH/mysql-connector-java-5.1.25/mysql-connector-java-5.1.25-bin.jar /opt/cloudera/parcels/CDH/lib/hive/lib/mysql-connector-java.jar
-[ -d /var/lib/oozie ] && ln -s /usr/share/java/mysql-connector-java.jar /var/lib/oozie/mysql-connector-java.jar
+[[ -d "/usr/share/java/" && ! -e "/usr/share/java/mysql-connector-java.jar" ]] && cp /root/CDH/mysql-connector-java-5.1.25/mysql-connector-java-5.1.25-bin.jar /usr/share/java/mysql-connector-java.jar
+[[ -d "/opt/cloudera/parcels/CDH/lib/hive/lib/" && ! -e "/opt/cloudera/parcels/CDH/lib/hive/lib/mysql-connector-java.jar" ]] && ln -s /root/CDH/mysql-connector-java-5.1.25/mysql-connector-java-5.1.25-bin.jar 
+[[ -d "/var/lib/oozie/" && ! -e "/var/lib/oozie/mysql-connector-java.jar" ]] && ln -s /usr/share/java/mysql-connector-java.jar /var/lib/oozie/mysql-connector-java.jar
 
 echo "* ExtJS library to enable Oozie webconsole ..."
 wget http://extjs.com/deploy/ext-2.2.zip -O /root/CDH/ext-2.2.zip
-[ -d /var/lib/oozie/ext-2.2 ] || unzip /root/CDH/ext-2.2.zip -d /var/lib/oozie/
+[ -d "/var/lib/oozie/ext-2.2/" ] || unzip /root/CDH/ext-2.2.zip -d /var/lib/oozie/
 
 echo "* Downloading Java Cryptography Extension (JCE) ..."
 wget --no-check-certificate --no-cookies --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com" http://download.oracle.com/otn-pub/java/jce_policy/6/jce_policy-6.zip -O /root/CDH/jce_policy-6.zip
-[ -d /usr/java/default/jre/lib/security/ ] && unzip -oj /root/CDH/jce_policy-6.zip -d /usr/java/default/jre/lib/security/
+[ -d "/usr/java/default/jre/lib/security/" ] && unzip -oj /root/CDH/jce_policy-6.zip -d /usr/java/default/jre/lib/security/
 
 EOF
 chmod +x /root/CDH/dep-download.sh
@@ -62,6 +62,23 @@ send \"y\r\"
 expect eof
 " 
 yum remove -y expect
+
+curl -L http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.25.tar.gz/from/http://cdn.mysql.com/ | tar xzv
+[[ -d "/usr/share/java/" && ! -e "/usr/share/java/mysql-connector-java.jar" ]] && cp /root/CDH/mysql-connector-java-5.1.25/mysql-connector-java-5.1.25-bin.jar /usr/share/java/mysql-connector-java.jar
+[[ -d "/opt/cloudera/parcels/CDH/lib/hive/lib/" && ! -e "/opt/cloudera/parcels/CDH/lib/hive/lib/mysql-connector-java.jar" ]] && ln -s /root/CDH/mysql-connector-java-5.1.25/mysql-connector-java-5.1.25-bin.jar 
+
+chkconfig mysqld on
+service mysqld start
+sleep 10
+
+for service in amon smon rman hmon nav hive; do
+  mysql -u root -e "create database \$service DEFAULT default character set utf8 collate utf8_general_ci;"
+  mysql -u root -e "grant all on \$service.* TO '\$service'@'localhost' IDENTIFIED BY 'password';"
+  mysql -u root -e "grant all on \$service.* TO '\$service'@'192-168-1-109.lunix.co' IDENTIFIED BY 'password';"
+  mysql -u root -e "grant all on \$service.* TO '\$service'@'%.lunix.co' IDENTIFIED BY 'password';"
+done
+mysql -u root -e 'show databases;'
+
 EOF
 chmod +x /root/CDH/mysqlinit.sh
 
