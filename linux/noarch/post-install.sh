@@ -17,7 +17,7 @@ echo "* Downloading the latest Cloudera Manager installer ..."
 wget -q http://archive.cloudera.com/cm4/installer/latest/cloudera-manager-installer.bin -O /root/CDH/cloudera-manager-installer.bin && chmod +x /root/CDH/cloudera-manager-installer.bin
 POST_OPTIONS=( dep-download.sh mysql-init.sh vboxadditions.sh orajava-install.sh getip.sh cm-install.sh krb5conf.sh )
 for OPT in ${POST_OPTIONS[@]}; do
-  curl -L "https://github.com/mrmichalis/hadoop-cdh/raw/master/linux/noarch/${OPT}" -O /root/CDH/${OPT} && chmod +x /root/CDH/${OPT}
+  wget -q "https://github.com/mrmichalis/hadoop-cdh/raw/master/linux/noarch/${OPT}" -O /root/CDH/${OPT} && chmod +x /root/CDH/${OPT}
 done;
 
 # Make sure udev doesn't block our network
