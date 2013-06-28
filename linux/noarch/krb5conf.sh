@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
 #http://www.cloudera.com/content/cloudera-content/cloudera-docs/CDH4/latest/CDH4-Security-Guide/cdh4sg_topic_3.html
 #http://www.cloudera.com/content/cloudera-content/cloudera-docs/CM4Ent/latest/Cloudera-Manager-Managing-Clusters/cmmc_hadoop_security.html
+
+if [ $# -lt 1 ]; then
+    echo "usage: $0 [REALM]" 1>&2
+    exit 1
+fi
+
 #pre-req
 yum install krb5-server krb5-workstation krb5-libs -y
 echo "* Downloading Java Cryptography Extension (JCE) ..."
 wget --no-check-certificate --no-cookies --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com" http://download.oracle.com/otn-pub/java/jce_policy/6/jce_policy-6.zip -O /root/CDH/jce_policy-6.zip
 [[ -d "/usr/java/default/jre/lib/security/" ]] && unzip -oj /root/CDH/jce_policy-6.zip -d /usr/java/default/jre/lib/security/
- 
-if [ $# -lt 1 ]; then
-    echo "usage: $0 [REALM]" 1>&2
-    exit 1
-fi
+
 REALM=${1^^}
 FQDN=$(hostname -f)
 (
