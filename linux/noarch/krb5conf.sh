@@ -53,7 +53,7 @@ chown cloudera-scm:cloudera-scm /etc/cloudera-scm-server/cmf.keytab /etc/clouder
 chmod 0600 /etc/cloudera-scm-server/cmf.keytab /etc/cloudera-scm-server/cmf.principal
 )
 
-dd if=/dev/urandom of=/etc/hadoop/hadoop-http-auth-signature-secret bs=1024 count=1"
+dd if=/dev/urandom of=/etc/hadoop/hadoop-http-auth-signature-secret bs=1024 count=1
 # Additional Kerberos post-conf
 # adduser michalis -G hdfs -u 10001 -d /home/michalis -m"
 # hadoop fs -mkdir /user/michalis
