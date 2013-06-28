@@ -71,7 +71,7 @@ for target in "$@"; do
     installJava
     stopServices
     useRpm $target
-    yum install -y cloudera-manager-daemons cloudera-manager-server cloudera-manager-agent $SERVER_DB
+    yum install -y cloudera-manager-daemons cloudera-manager-server cloudera-manager-agent
     startServices
     shift
     ;;
