@@ -1,9 +1,16 @@
 #!/usr/bin/env bash
 usage() {
-  echo "usage: $0 --version=4.5.1 or --bin (--embed-db)" 1>&2
-  echo "Optional: --embed-db      : install cloudera-manager-server-db" 1>&2
+  echo "usage: $0 --bin or --version=4.6.0 [--embed-db]" 1>&2
+  echo "Options" 1>&2
+  echo "  --bin              :   Use latest installer" 1>&2
+  echo "  --version=[4.2.1]  :   Install/Upgrade version" 1>&2
+  echo ""
   echo "Available versions: " 1>&2
   wget -qO - http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/ | awk 'BEGIN{ RS="<a *href *= *\""} NR>2 {sub(/".*/,"|");print;}' | grep "^4" | tr "/" " " | tr "\n" " "
+  echo ""
+  echo "Optional" 1>&2
+  echo "  --embed-db         :   Install/Upgrade cloudera-manager-server-db" 1>&2
+  echo ""
   echo ""
 }
 
