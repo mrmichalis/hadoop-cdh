@@ -29,11 +29,15 @@ chkconfig mysqld on
 service mysqld start
 sleep 10
 
-for service in amon smon rman hmon nav hive; do
+for service in amon smon rman hmon nav hive temp; do
   mysql -u root -e "CREATE DATABASE IF NOT EXISTS $service DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;"
-  mysql -u root -e "GRANT ALL ON $service.* TO '$service'@'localhost' IDENTIFIED BY 'password';"
-  mysql -u root -e "GRANT ALL ON $service.* TO '$service'@'$(hostname -f)' IDENTIFIED BY 'password';"
-  mysql -u root -e "GRANT ALL ON $service.* TO '$service'@'%.lunix.co' IDENTIFIED BY 'password';"  
-  mysql -u root -e "GRANT ALL ON $service.* TO '$service'@'%' IDENTIFIED BY 'password';"  
+  mysql -u root -e "GRANT ALL ON *.* TO '$service'@'localhost' IDENTIFIED BY 'password' WITH GRANT OPTION;"
+  mysql -u root -e "GRANT ALL ON *.* TO '$service'@'$(hostname -f)' IDENTIFIED BY 'password' WITH GRANT OPTION;"
+  mysql -u root -e "GRANT ALL ON *.* TO '$service'@'%.lunix.co' IDENTIFIED BY 'password' WITH GRANT OPTION;"  
+  mysql -u root -e "GRANT ALL ON *.* TO '$service'@'%' IDENTIFIED BY 'password' WITH GRANT OPTION;"  
 done
 mysql -u root -e 'show databases;'
+
+# http://www.cloudera.com/content/cloudera-content/cloudera-docs/CM4Ent/latest/Cloudera-Manager-Installation-Guide/cmig_install_path_B.html
+# cd /usr/share/cmf/
+# ./scm_prepare_database.sh mysql -h localhost -u temp -ppassword --scm-host localhost scm scm scm
