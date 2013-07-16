@@ -11,6 +11,16 @@ usage() {
   echo "  --embed-db         :   Install/Upgrade cloudera-manager-server-db" 1>&2
   echo " "
 }
+function promptyn () {
+  while true; do
+    read -p "$1 " yn
+    case $yn in
+      [Yy]* ) return 0;;
+      [Nn]* ) return 1;;
+      * ) echo "Please answer Yes or No.";;
+    esac
+  done
+}
 
 function redirectHosts {
  if [ $(egrep -ic "192.168.1.245" "/etc/hosts") -eq 0 ]; then
@@ -42,9 +52,12 @@ EOF
 }
  
 startServices() {
- for SERVICE_NAME in cloudera-scm-server-db cloudera-scm-server cloudera-scm-agent; do
+ for SERVICE_NAME in cloudera-scm-server-db cloudera-scm-server; do
   service $SERVICE_NAME start
  done
+ if promptyn "Do you wish to start cloudera-scm-agent [Y]es or [No]?"; then
+  service cloudera-scm-agent start
+ fi 
 }
  
 stopServices() {
