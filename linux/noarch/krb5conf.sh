@@ -55,7 +55,9 @@ chmod 0600 /etc/cloudera-scm-server/cmf.keytab /etc/cloudera-scm-server/cmf.prin
 
 dd if=/dev/urandom of=/etc/hadoop/hadoop-http-auth-signature-secret bs=1024 count=1
 # Additional Kerberos post-conf
-# adduser michalis -G hdfs -u 10001 -d /home/michalis -m"
-# hadoop fs -mkdir /user/michalis
-# hadoop fs -chown michalis:supergroup /user/michalis
-# curl -v -u michalis:xxxxx --negotiate http://$(hostname -f):50070/dfshealth.jsp
+# adduser mko -G hdfs,hadoop -u 10001 -d /home/mko -m
+# hadoop fs -mkdir /user/mko
+# hadoop fs -chown mko:supergroup /user/mko
+# curl -v -u mko:xxxxx --negotiate http://$(hostname -f):50070/dfshealth.jsp
+# userdel -f -r mko 
+# usermod -a -G ftp tony

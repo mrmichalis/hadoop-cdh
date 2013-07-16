@@ -23,7 +23,7 @@ yum remove -y expect
 
 curl -L http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.25.tar.gz/from/http://cdn.mysql.com/ | tar xzv
 [[ -d "/usr/share/java/" && ! -e "/usr/share/java/mysql-connector-java.jar" ]] && cp /root/CDH/mysql-connector-java-5.1.25/mysql-connector-java-5.1.25-bin.jar /usr/share/java/mysql-connector-java.jar
-[[ -d "/opt/cloudera/parcels/CDH/lib/hive/lib/" && ! -e "/opt/cloudera/parcels/CDH/lib/hive/lib/mysql-connector-java.jar" ]] && ln -s /root/CDH/mysql-connector-java-5.1.25/mysql-connector-java-5.1.25-bin.jar 
+[[ -d "/opt/cloudera/parcels/CDH/lib/hive/lib/" && ! -e "/opt/cloudera/parcels/CDH/lib/hive/lib/mysql-connector-java.jar" ]] && ln -s /root/CDH/mysql-connector-java-5.1.25/mysql-connector-java-5.1.25-bin.jar /opt/cloudera/parcels/CDH/lib/hive/lib/mysql-connector-java.jar
 
 chkconfig mysqld on
 service mysqld start
