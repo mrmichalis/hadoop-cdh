@@ -11,6 +11,7 @@ usage() {
   echo "  --embed-db         :   Install/Upgrade cloudera-manager-server-db" 1>&2
   echo " "
 }
+
 function promptyn () {
   while true; do
     read -p "$1 " yn
@@ -55,7 +56,7 @@ startServices() {
  for SERVICE_NAME in cloudera-scm-server-db cloudera-scm-server; do
   service $SERVICE_NAME start
  done
- if promptyn "Do you wish to start cloudera-scm-agent [Y]es or [No]?"; then
+ if promptyn "Do you wish to start cloudera-scm-agent? [Y/N]"; then
   service cloudera-scm-agent start
  fi 
 }
