@@ -18,7 +18,7 @@ function promptyn () {
     case $yn in
       [Yy]* ) return 0;;
       [Nn]* ) return 1;;
-      * ) echo "Please answer Yes or No.";;
+      * ) echo "Please answer with [y]es or [n]o.";;
     esac
   done
 }
@@ -51,18 +51,15 @@ gpgkey = http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/RPM-GPG-KEY-cloudera
 gpgcheck = 1
 EOF
 }
- 
+
 startServices() {
- for SERVICE_NAME in cloudera-scm-server-db cloudera-scm-server; do
+ for SERVICE_NAME in cloudera-scm-server cloudera-scm-server-db $START_SCM_AGENT; do
   service $SERVICE_NAME start
  done
- if promptyn "Do you wish to start cloudera-scm-agent? [Y/N]"; then
-  service cloudera-scm-agent start
- fi 
 }
  
 stopServices() {
- for SERVICE_NAME in cloudera-scm-server cloudera-scm-agent cloudera-scm-server-db; do
+ for SERVICE_NAME in cloudera-scm-agent cloudera-scm-server cloudera-scm-server-db; do
   service $SERVICE_NAME stop
  done
 }
@@ -91,6 +88,12 @@ for target in "$@"; do
     stopServices
     useRpm $target
     yum install -y cloudera-manager-daemons cloudera-manager-server cloudera-manager-agent
+    START_SCM_AGENT=''
+    if [ -z $START_SCM_AGENT ] && promptyn "Do you wish to start cloudera-scm-agent? [y/n]"; then 
+      echo "$START_SCM_AGENT"
+      START_SCM_AGENT=${START_SCM_AGENT:-cloudera-scm-agent}
+      service cloudera-scm-agent start
+    fi 
     startServices
     shift
     ;;
