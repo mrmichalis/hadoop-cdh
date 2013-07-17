@@ -3,6 +3,25 @@ set -x
 
 #start -init
 sed -i 's/alias/#alias/g' /root/.bashrc
+
+cat << EOF >> /root/.bashrc
+# Auto-screen invocation. see: http://taint.org/wk/RemoteLoginAutoScreen
+# if we're coming from a remote SSH connection, in an interactive session
+# then automatically put us into a screen(1) session.   Only try once
+# -- if $STARTED_SCREEN is set, don't try it again, to avoid looping
+# if screen fails for some reason.
+if [ "\$PS1" != "" -a "\${STARTED_SCREEN:-x}" = x -a "\${SSH_TTY:-x}" != x ]
+then
+  STARTED_SCREEN=1 ; export STARTED_SCREEN
+  [ -d \$HOME/lib/screen-logs ] || mkdir -p \$HOME/lib/screen-logs
+  sleep 1
+  screen -RR && exit 0
+  # normally, execution of this rc script ends here...
+  echo "Screen failed! continuing with normal bash startup"
+fi
+# [end of auto-screen snippet]
+EOF
+
 #http://www.cyberciti.biz/faq/unable-to-read-consumer-identity-rhn-yum-warning/
 if grep -q -i "Red Hat" /etc/redhat-release; then
   sed -i 's/1/0/g' /etc/yum/pluginconf.d/product-id.conf 
