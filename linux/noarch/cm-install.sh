@@ -95,6 +95,7 @@ for target in "$@"; do
       service cloudera-scm-agent start
     fi 
     startServices
+    [[ -z /home/hdfs ]] || mkdir -p /home/hdfs && chown -R hdfs:hdfs /home/hdfs
     shift
     ;;
   --embed-db)
