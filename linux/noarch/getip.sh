@@ -1,19 +1,20 @@
 #!/usr/bin/env bash
-usage() {
+function usage() {
   echo "usage: $0 -a=[HOST_IP_ADDRESS] or -f=[HOSTLIST_FILE]" 1>&2
-  echo "Options" 1>&2
   echo " "
 }
 
 if [ $# -lt 1 ]; then
-  echo "usage: $0 [hosts list]" 1>&2
+  usage
   exit 1
 fi
 
-IPADDR=$(ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}')
 function configure {
-  for IP in $($1 | grep -v $IPADDR); do ssh root@$IP "grep $(hostname -d) /etc/hosts" >> /etc/hosts; done
-  for IP in $($1 | grep -v $IPADDR); do scp /etc/hosts root@$IP:/etc/hosts; done
+  HOST=$1
+  IPADDR=$(ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}')
+  echo "Connecting to $HOST..."
+  ssh root@$HOST "grep $(hostname -d) /etc/hosts" >> /etc/hosts
+  scp /etc/hosts root@$HOST:/etc/hosts
 }
 
 for target in "$@"; do
@@ -26,7 +27,7 @@ for target in "$@"; do
     shift
     ;;
   -a*)
-    HOSTSLIST=$(echo $target | sed -e 's/^[^=]*=//g')    
+    HOSTSLIST=$(echo $target | sed -e 's/^[^=]*=//g')
     configure $HOSTSLIST
     shift
     ;;
