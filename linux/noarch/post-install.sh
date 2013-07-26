@@ -3,7 +3,7 @@ set -x
 
 #start -init
 sed -i 's/alias/#alias/g' /root/.bashrc
-echo "set -o vi"    >> /root/.bashrc
+#echo "set -o vi"    >> /root/.bashrc
 echo "alias vi=vim" >> /root/.bashrc
 
 cat << EOF >> /root/.bashrc
