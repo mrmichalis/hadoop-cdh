@@ -34,6 +34,9 @@ altscreen on
 # show MPD info in status bar
 backtick 1 5 5 hostname
 
+#http://serverfault.com/questions/32313/putty-and-screen-and-scroll-back-buffer
+termcapinfo xterm ti@:te@
+
 # Set the caption on the bottom line:
 # window-list <nowplaying> <mm/dd/yy> <HH:MM>am/pm
 #caption always "%{= kw}%-w%{= BW}%n %t%{-}%+w %-= %1` %m/%d/%y %C:%s%a"
