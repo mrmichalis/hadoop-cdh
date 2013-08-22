@@ -31,9 +31,9 @@ sleep 10
 
 for service in scm hue amon smon rman hmon nav hive temp; do
   mysql -u root -e "CREATE DATABASE IF NOT EXISTS $service DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;"
-  mysql -u root -e "GRANT ALL ON *.* TO '$service'@'localhost' IDENTIFIED BY 'password' WITH GRANT OPTION;"
-  mysql -u root -e "GRANT ALL ON *.* TO '$service'@'$(hostname -f)' IDENTIFIED BY 'password' WITH GRANT OPTION;"
-  mysql -u root -e "GRANT ALL ON *.* TO '$service'@'%.lunix.co' IDENTIFIED BY 'password' WITH GRANT OPTION;"
+#  mysql -u root -e "GRANT ALL ON *.* TO '$service'@'localhost' IDENTIFIED BY 'password' WITH GRANT OPTION;"
+#  mysql -u root -e "GRANT ALL ON *.* TO '$service'@'$(hostname -f)' IDENTIFIED BY 'password' WITH GRANT OPTION;"
+#  mysql -u root -e "GRANT ALL ON *.* TO '$service'@'%.lunix.co' IDENTIFIED BY 'password' WITH GRANT OPTION;"
   mysql -u root -e "GRANT ALL ON *.* TO '$service'@'%' IDENTIFIED BY 'password' WITH GRANT OPTION;"
 done
 mysql -u root -e 'show databases;'
