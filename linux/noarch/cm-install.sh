@@ -9,6 +9,7 @@ usage() {
   echo " "
   echo "Optional" 1>&2
   echo "  --embed-db         :   Install/Upgrade cloudera-manager-server-db" 1>&2
+  echo "  --mysql-db         :   Prepare MySQL Database" 1>&2
   echo " "
 }
 
@@ -36,7 +37,8 @@ function installJava {
 }
 
 function useBinInstaller {
- ./cloudera-manager-installer.bin --i-agree-to-all-licenses --noprompt --noreadme --nooptions
+./cloudera-manager-installer.bin --i-agree-to-all-licenses --noprompt --noreadme --nooptions
+#./cloudera-manager-installer.bin --use_embedded_db=0 --db_pw=cloudera_scm --no-prompt --i-agree-to-all-licenses --noreadme
 }
 
 function useRpm {
@@ -102,6 +104,13 @@ for target in "$@"; do
     stopServices
     SERVER_DB=${SERVER_DB:-cloudera-manager-server-db}
     yum install -y cloudera-manager-daemons cloudera-manager-server cloudera-manager-agent $SERVER_DB
+    startServices
+    shift
+    ;;
+  --mysql-db)
+    stopServices
+    /usr/share/cmf/schema/scm_prepare_database.sh mysql scm scm password
+    yum install -y cloudera-manager-daemons cloudera-manager-server cloudera-manager-agent
     startServices
     shift
     ;;

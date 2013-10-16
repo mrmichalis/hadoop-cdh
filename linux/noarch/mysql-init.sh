@@ -21,9 +21,9 @@ expect eof
 " 
 yum remove -y expect
 
-curl -L http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.25.tar.gz/from/http://cdn.mysql.com/ | tar xzv
-[[ -d "/usr/share/java/" && ! -e "/usr/share/java/mysql-connector-java.jar" ]] && cp /root/CDH/mysql-connector-java-5.1.25/mysql-connector-java-5.1.25-bin.jar /usr/share/java/mysql-connector-java.jar
-[[ -d "/opt/cloudera/parcels/CDH/lib/hive/lib/" && ! -e "/opt/cloudera/parcels/CDH/lib/hive/lib/mysql-connector-java.jar" ]] && ln -s /root/CDH/mysql-connector-java-5.1.25/mysql-connector-java-5.1.25-bin.jar /opt/cloudera/parcels/CDH/lib/hive/lib/mysql-connector-java.jar
+curl -L http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-gpl-5.1.26.msi/from/http://cdn.mysql.com/ | tar xzv
+[[ -d "/usr/share/java/" && ! -e "/usr/share/java/mysql-connector-java.jar" ]] && cp /root/CDH/mysql-connector-java-5.1.26/mysql-connector-java-5.1.26-bin.jar /usr/share/java/mysql-connector-java.jar
+[[ -d "/opt/cloudera/parcels/CDH/lib/hive/lib/" && ! -e "/opt/cloudera/parcels/CDH/lib/hive/lib/mysql-connector-java.jar" ]] && ln -s /root/CDH/mysql-connector-java-5.1.26/mysql-connector-java-5.1.26-bin.jar /opt/cloudera/parcels/CDH/lib/hive/lib/mysql-connector-java.jar
 
 chkconfig mysqld on
 service mysqld start
@@ -33,11 +33,14 @@ for service in scm hue amon smon rman hmon nav hive temp; do
   mysql -u root -e "CREATE DATABASE IF NOT EXISTS $service DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;"
   mysql -u root -e "GRANT ALL ON *.* TO '$service'@'localhost' IDENTIFIED BY 'password' WITH GRANT OPTION;"
   mysql -u root -e "GRANT ALL ON *.* TO '$service'@'$(hostname -f)' IDENTIFIED BY 'password' WITH GRANT OPTION;"
-  mysql -u root -e "GRANT ALL ON *.* TO '$service'@'%.lunix.co' IDENTIFIED BY 'password' WITH GRANT OPTION;"
   mysql -u root -e "GRANT ALL ON *.* TO '$service'@'%' IDENTIFIED BY 'password' WITH GRANT OPTION;"
+  mysql -u root -e "GRANT ALL ON *.* TO '$service'@'%.lunix.co' IDENTIFIED BY 'password' WITH GRANT OPTION;"
+  mysql -u root -e "GRANT ALL ON *.* TO '$service'@'archive.cloudera.com' IDENTIFIED BY 'password' WITH GRANT OPTION;"
 done
 mysql -u root -e 'show databases;'
 
 # http://www.cloudera.com/content/cloudera-content/cloudera-docs/CM4Ent/latest/Cloudera-Manager-Installation-Guide/cmig_install_path_B.html
 # cd /usr/share/cmf/
-# ./scm_prepare_database.sh mysql -h localhost -u temp -ppassword --scm-host localhost scm scm scm
+# ./scm_prepare_database.sh mysql -h localhost -u temp -ppassword --scm-host localhost scm scm password
+
+  
