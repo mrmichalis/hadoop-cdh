@@ -29,8 +29,8 @@ if grep -q -i "Red Hat" /etc/redhat-release; then
   sed -i 's/1/0/g' /etc/yum/pluginconf.d/product-id.conf 
   sed -i 's/1/0/g' /etc/yum/pluginconf.d/subscription-manager.conf
 fi
-echo "192.168.1.245 archive.cloudera.com" >> /etc/hosts
-echo "192.168.1.245 beta.cloudera.com" >> /etc/hosts
+echo "192.168.88.250 archive.cloudera.com" >> /etc/hosts
+echo "192.168.88.250 beta.cloudera.com" >> /etc/hosts
 mkdir -p /root/CDH
 #end -init
 
