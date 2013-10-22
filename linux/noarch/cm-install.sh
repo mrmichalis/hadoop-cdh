@@ -25,9 +25,9 @@ function promptyn () {
 }
 
 function redirectHosts {
- if [ $(egrep -ic "192.168.1.245" "/etc/hosts") -eq 0 ]; then
-  echo "192.168.1.245 archive.cloudera.com" >> /etc/hosts
-  echo "192.168.1.245 beta.cloudera.com" >> /etc/hosts
+ if [ $(egrep -ic "192.168.88.250" "/etc/hosts") -eq 0 ]; then
+  echo "192.168.88.250 archive.cloudera.com" >> /etc/hosts
+  echo "192.168.88.250 beta.cloudera.com" >> /etc/hosts
  fi
 }
 
