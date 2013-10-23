@@ -55,7 +55,7 @@ EOF
 }
 
 startServices() {
- for SERVICE_NAME in cloudera-scm-server cloudera-scm-server-db $START_SCM_AGENT; do
+ for SERVICE_NAME in cloudera-scm-server-db cloudera-scm-server $START_SCM_AGENT; do
   service $SERVICE_NAME start
  done
 }
