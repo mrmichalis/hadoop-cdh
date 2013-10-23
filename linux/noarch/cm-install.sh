@@ -67,12 +67,12 @@ stopServices() {
 }
 
 function managerSettings {
- # curl -u admin:admin http://$(hostname):7180/api/v3/cm/deployment > managerSettings.json
+ # curl -u admin:admin http://$(hostname):7180/api/v5/cm/deployment > managerSettings.json
  INIT_FILE="/root/CDH/managerSettings.json"
  wget "http://archive.cloudera.com/managerSettings.json" -O "$INIT_FILE"
  while ! exec 6<>/dev/tcp/$(hostname)/7180; do echo -e -n "Waiting for cloudera-scm-server to start..."; sleep 10; done
  if [ -f $INIT_FILE ]; then
-   curl --upload-file $INIT_FILE -u admin:admin http://$(hostname):7180/api/v3/cm/deployment?deleteCurrentDeployment=true
+   curl --upload-file $INIT_FILE -u admin:admin http://$(hostname):7180/api/v5/cm/deployment?deleteCurrentDeployment=true
    service cloudera-scm-server restart
  fi
 }
