@@ -35,7 +35,7 @@ for service in scm hue amon smon rman hmon nav hive temp; do
   mysql -u root -e "GRANT ALL ON *.* TO '$service'@'$(hostname -f)' IDENTIFIED BY 'password' WITH GRANT OPTION;"
   mysql -u root -e "GRANT ALL ON *.* TO '$service'@'%' IDENTIFIED BY 'password' WITH GRANT OPTION;"
   mysql -u root -e "GRANT ALL ON *.* TO '$service'@'%.lunix.co' IDENTIFIED BY 'password' WITH GRANT OPTION;"
-  mysql -u root -e "GRANT ALL ON *.* TO '$service'@'archive.cloudera.com' IDENTIFIED BY 'password' WITH GRANT OPTION;"
+  mysql -u root -e "GRANT ALL ON *.* TO 'root'@'archive.cloudera.com' IDENTIFIED BY 'password' WITH GRANT OPTION;"
 done
 mysql -u root -e 'show databases;'
 
