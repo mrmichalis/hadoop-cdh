@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
+START_SCM_AGENT=''
+SERVER_DB=''
+
 usage() {
   VERTMP=$(wget -qO - http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/ | awk 'BEGIN{ RS="<a *href *= *\""} NR>2 {sub(/".*/,"|");print;}' | grep "^4" | tr "/" " " | tr "\n" " ")
-  echo "usage: $0 --bin or --version=4.6.0 [--embed-db]" 1>&2
+  echo "usage: $0 --bin or --version=4.6.0 [--embed-db OR --mysql-db]" 1>&2
   echo "Options" 1>&2
   echo "  --bin              :   Use latest installer" 1>&2
   echo "  --version=[4.2.1]  :   Install/Upgrade version" 1>&2
@@ -55,7 +58,7 @@ EOF
 }
 
 startServices() {
- for SERVICE_NAME in cloudera-scm-server-db cloudera-scm-server $START_SCM_AGENT; do
+ for SERVICE_NAME in $SERVER_DB cloudera-scm-server $START_SCM_AGENT; do
   service $SERVICE_NAME start
  done
 }
@@ -90,7 +93,6 @@ for target in "$@"; do
     stopServices
     useRpm $target
     yum install -y cloudera-manager-daemons cloudera-manager-server cloudera-manager-agent
-    START_SCM_AGENT=''
     if [ -z $START_SCM_AGENT ] && promptyn "Do you wish to start cloudera-scm-agent? [y/n]"; then 
       echo "$START_SCM_AGENT"
       START_SCM_AGENT=${START_SCM_AGENT:-cloudera-scm-agent}
@@ -110,6 +112,7 @@ for target in "$@"; do
   --mysql-db)
     stopServices
     /usr/share/cmf/schema/scm_prepare_database.sh mysql scm scm password
+    #/usr/share/cmf/schema/scm_prepare_database.sh mysql -h localhost -u temp -ppassword --scm-host localhost scm scm password
     yum install -y cloudera-manager-daemons cloudera-manager-server cloudera-manager-agent
     startServices
     shift
