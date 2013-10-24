@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#service mysqld start
+service mysqld start
 yum install -y expect
 expect -c " 
 set timeout 5
