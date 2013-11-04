@@ -40,6 +40,8 @@ service kadmin start
 sleep 10 
 kadmin.local -q "addprinc root/admin"
 kadmin.local -q "addprinc hdfs@$REALM"
+kadmin.local -q "addprinc mko/admin"
+kadmin.local -q "addprinc mko@$REALM"
 
 echo "Generating cloudera-scm/admin principal for Cloudera Manager"
 kadmin.local >/dev/null <<EOF

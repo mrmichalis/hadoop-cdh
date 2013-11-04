@@ -5,6 +5,8 @@ rpm --import http://archive.cloudera.com/cdh4/redhat/6/x86_64/cdh/RPM-GPG-KEY-cl
 
 #http://www.cloudera.com/content/cloudera-content/cloudera-docs/CDH4/latest/CDH4-Quick-Start/cdh4qs_topic_3_2.html
 yum -y install hadoop-0.20-conf-pseudo
+#Step 1: Format the NameNode
+sudo -u hdfs hdfs namenode -format
 
 #Step 2: Start HDFS
 for x in `cd /etc/init.d ; ls hadoop-hdfs-*` ; do sudo service $x start ; done
