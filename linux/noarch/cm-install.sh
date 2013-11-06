@@ -83,38 +83,32 @@ if [ $# -lt 1 ]; then
   usage
   exit 1
 fi
-
+stopServices
 set -x
 for target in "$@"; do
   case "$target" in
   --version*)
     redirectHosts
-    installJava
-    stopServices
+    installJava    
     useRpm $target
     yum install -y cloudera-manager-daemons cloudera-manager-server cloudera-manager-agent
     if [ -z $START_SCM_AGENT ] && promptyn "Do you wish to start cloudera-scm-agent? [y/n]"; then 
       echo "$START_SCM_AGENT"
       START_SCM_AGENT=${START_SCM_AGENT:-cloudera-scm-agent}
-      service cloudera-scm-agent start
-    fi 
-    startServices
+    fi     
     [[ -z /home/hdfs ]] || mkdir -p /home/hdfs && chown -R hdfs:hdfs /home/hdfs
     shift
     ;;
-  --embed-db)
-    stopServices
+  --embed-db)    
     SERVER_DB=${SERVER_DB:-cloudera-manager-server-db}
-    yum install -y cloudera-manager-daemons cloudera-manager-server cloudera-manager-agent $SERVER_DB
-    startServices
+    yum install -y cloudera-manager-daemons cloudera-manager-server cloudera-manager-agent $SERVER_DB    
     shift
     ;;
-  --mysql-db)
-    stopServices
+  --mysql-db)    
+    sh /root/CDH/mysql-init.sh
     /usr/share/cmf/schema/scm_prepare_database.sh mysql scm scm password
     #/usr/share/cmf/schema/scm_prepare_database.sh mysql -h localhost -u temp -ppassword --scm-host localhost scm scm password
-    yum install -y cloudera-manager-daemons cloudera-manager-server cloudera-manager-agent
-    startServices
+    #yum install -y cloudera-manager-daemons cloudera-manager-server cloudera-manager-agent    
     shift
     ;;
   --lic)
@@ -131,5 +125,6 @@ for target in "$@"; do
     exit 1    
   esac
 done
+startServices
 
 exit 0
