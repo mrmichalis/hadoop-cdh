@@ -15,6 +15,7 @@ wget --no-check-certificate --no-cookies --header "Cookie: gpw_e24=http%3A%2F%2F
 
 REALM=${1^^}
 FQDN=$(hostname -f)
+PASSWRD=Had00p
 (
 TIMESTAMP=$(date "+%Y%m%d_%H%M%S")
 cp /etc/krb5.conf /etc/krb5.conf.backup.$TIMESTAMP
@@ -30,18 +31,20 @@ sed -i "s/EXAMPLE.COM/$REALM/g" /var/kerberos/krb5kdc/kdc.conf
 )
  
 (
-echo "Creating the KDC with password: cloudera"
-kdb5_util -P "cloudera" create -s
+echo "Creating the KDC with password: $PASSWRD"
+kdb5_util -P "$PASSWRD" create -s
 
 chkconfig krb5kdc on
 chkconfig kadmin on
 service krb5kdc start
 service kadmin start
 sleep 10 
-kadmin.local -q "addprinc root/admin"
-kadmin.local -q "addprinc hdfs@$REALM"
-kadmin.local -q "addprinc mko/admin"
-kadmin.local -q "addprinc mko@$REALM"
+
+kadmin.local -q "addprinc -pw $PASSWRD root/admin"
+kadmin.local -q "addprinc -pw $PASSWRD hdfs@$REALM"
+kadmin.local -q "addprinc -pw $PASSWRD mko/admin"
+kadmin.local -q "addprinc -pw $PASSWRD mko@$REALM"
+kadmin.local -q "addprinc -pw $PASSWRD guest@$REALM"
 
 echo "Generating cloudera-scm/admin principal for Cloudera Manager"
 kadmin.local >/dev/null <<EOF
