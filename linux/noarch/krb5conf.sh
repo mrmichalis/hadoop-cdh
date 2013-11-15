@@ -3,7 +3,7 @@
 #http://www.cloudera.com/content/cloudera-content/cloudera-docs/CM4Ent/latest/Cloudera-Manager-Managing-Clusters/cmmc_hadoop_security.html
 
 if [ $# -lt 1 ]; then
-    echo "usage: $0 [REALM]" 1>&2
+    echo "usage: $0 [REALM i.e. LUNIX.LAN]" 1>&2
     exit 1
 fi
 
