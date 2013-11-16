@@ -24,6 +24,10 @@ fi
 # [end of auto-screen snippet]
 EOF
 
+echo "* Install puppet 6.7 repo"
+rpm -ivh http://yum.puppetlabs.com/el/6/products/x86_64/puppetlabs-release-6-7.noarch.rpm
+yum install -y puppet
+
 #http://www.cyberciti.biz/faq/unable-to-read-consumer-identity-rhn-yum-warning/
 if grep -q -i "Red Hat" /etc/redhat-release; then
   sed -i 's/1/0/g' /etc/yum/pluginconf.d/product-id.conf 
