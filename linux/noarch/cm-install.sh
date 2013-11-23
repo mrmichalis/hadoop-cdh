@@ -92,10 +92,10 @@ for target in "$@"; do
     installJava    
     useRpm $target
     yum install -y cloudera-manager-daemons cloudera-manager-server cloudera-manager-agent
-    if [ -z $START_SCM_AGENT ] && promptyn "Do you wish to start cloudera-scm-agent? [y/n]"; then 
-      echo "$START_SCM_AGENT"
-      START_SCM_AGENT=${START_SCM_AGENT:-cloudera-scm-agent}
-    fi     
+    # if [ -z $START_SCM_AGENT ] && promptyn "Do you wish to start cloudera-scm-agent? [y/n]"; then 
+      # echo "$START_SCM_AGENT"
+      # START_SCM_AGENT=${START_SCM_AGENT:-cloudera-scm-agent}
+    # fi     
     [[ -z /home/hdfs ]] || mkdir -p /home/hdfs && chown -R hdfs:hdfs /home/hdfs
     shift
     ;;
