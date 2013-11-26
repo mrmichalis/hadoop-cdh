@@ -52,7 +52,7 @@ addprinc -randkey cloudera-scm/admin
 xst -k cmf.keytab cloudera-scm/admin
 EOF
  
-echo "cloudera-scm/admin@LUNIX.CO" > /etc/cloudera-scm-server/cmf.principal
+echo "cloudera-scm/admin@$REALM" > /etc/cloudera-scm-server/cmf.principal
 mv cmf.keytab /etc/cloudera-scm-server/cmf.keytab
 chown cloudera-scm:cloudera-scm /etc/cloudera-scm-server/cmf.keytab /etc/cloudera-scm-server/cmf.principal
 chmod 0600 /etc/cloudera-scm-server/cmf.keytab /etc/cloudera-scm-server/cmf.principal
