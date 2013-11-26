@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 echo "* Oracle JDK 6u31 from CM..."
 command -v java >/dev/null 2>&1 || wget http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/4/RPMS/x86_64/jdk-6u31-linux-amd64.rpm -O /root/CDH/jdk-6u31-linux-amd64.rpm && rpm -ivh /root/CDH/jdk-6u31-linux-amd64.rpm
+echo "* Oracle JDK 7u25 from CM..."
+command -v java >/dev/null 2>&1 || wget http://archive.cloudera.com/cm5/redhat/6/x86_64/cm/5/RPMS/x86_64/oracle-j2sdk1.7-1.7.0+update25-1.x86_64.rpm -O /root/CDH/oracle-j2sdk1.7-1.7.0+update25-1.x86_64.rpm && rpm -ivh /root/CDH/oracle-j2sdk1.7-1.7.0+update25-1.x86_64.rpm
 
 echo "* Downloading MySQL Connector-J ..."
 curl -L http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.26.tar.gz/from/http://cdn.mysql.com/ | tar xzv
