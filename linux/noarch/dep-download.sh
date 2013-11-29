@@ -18,3 +18,6 @@ wget http://extjs.com/deploy/ext-2.2.zip -O /root/CDH/ext-2.2.zip
 echo "* Downloading Java Cryptography Extension (JCE) ..."
 wget --no-check-certificate --no-cookies --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com" http://download.oracle.com/otn-pub/java/jce_policy/6/jce_policy-6.zip -O /root/CDH/jce_policy-6.zip
 [ -d "/usr/java/default/jre/lib/security/" ] && unzip -oj /root/CDH/jce_policy-6.zip -d /usr/java/default/jre/lib/security/
+
+echo "* Downloading Java Cryptography Extension (JCE 7) ..."
+wget --no-check-certificate --no-cookies --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com" http://download.oracle.com/otn-pub/java/jce/7/UnlimitedJCEPolicyJDK7.zip -O /root/CDH/UnlimitedJCEPolicyJDK7.zip
