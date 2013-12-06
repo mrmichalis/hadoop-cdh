@@ -45,6 +45,7 @@ function useBinInstaller {
 }
 
 function useRpm {
+yum clean all
 CMVERSION=`echo $1 | sed -e 's/^[^=]*=//g'`
 rpm --import http://archive.cloudera.com/cdh4/redhat/6/x86_64/cdh/RPM-GPG-KEY-cloudera
 cat << EOF > /etc/yum.repos.d/cloudera-manager.repo
