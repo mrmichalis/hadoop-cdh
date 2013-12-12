@@ -9,9 +9,6 @@ fi
 
 #pre-req
 yum install krb5-server krb5-workstation krb5-libs -y
-echo "* Downloading Java Cryptography Extension (JCE) ..."
-wget --no-check-certificate --no-cookies --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com" http://download.oracle.com/otn-pub/java/jce_policy/6/jce_policy-6.zip -O /root/CDH/jce_policy-6.zip
-[[ -d "/usr/java/default/jre/lib/security/" ]] && unzip -oj /root/CDH/jce_policy-6.zip -d /usr/java/default/jre/lib/security/
 
 REALM=${1^^}
 FQDN=$(hostname -f)
@@ -59,10 +56,12 @@ chmod 0600 /etc/cloudera-scm-server/cmf.keytab /etc/cloudera-scm-server/cmf.prin
 )
 
 dd if=/dev/urandom of=/etc/hadoop/hadoop-http-auth-signature-secret bs=1024 count=1
-# Additional Kerberos post-conf
-# adduser mko -G hdfs,hadoop,root -u 10001 -d /home/mko -m
-# sudo -u hdfs hadoop fs -mkdir /user/mko
-# sudo -u hdfs hadoop fs -chown mko:supergroup /user/mko
+echo "Additional Kerberos post-conf"
+cat <<EOF
+adduser mko -G hdfs,hadoop,root -u 10001 -d /home/mko -m
+sudo -u hdfs hadoop fs -mkdir /user/mko
+sudo -u hdfs hadoop fs -chown mko:supergroup /user/mko
+EOF
 # curl -v -u mko:xxxxx --negotiate http://$(hostname -f):50070/dfshealth.jsp
 # userdel -f -r mko 
 # usermod -a -G root mko
