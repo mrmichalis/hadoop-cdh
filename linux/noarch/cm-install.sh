@@ -16,7 +16,7 @@ cat << EOF
   JDK (default JDK6)
     --jdk=[6 or 7]     :   Install with JDK 6 or JDK 7
 EOF
-  
+
 }
 
 function promptyn () {
@@ -33,27 +33,32 @@ function promptyn () {
 function installJava {
   JDK_VER=`echo $1 | sed -e 's/^[^=]*=//g'`
   echo $JDK_VER
-  if [ $JDK_VER -ne "7" ]; then 
+  if [ $JDK_VER -ne "7" ]; then
     echo "* Oracle JDK 6u31 from CM..."
     command -v java >/dev/null 2>&1 || wget http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/4/RPMS/x86_64/jdk-6u31-linux-amd64.rpm -O /root/CDH/jdk-6u31-linux-amd64.rpm
     command -v java >/dev/null 2>&1 || rpm -ivh /root/CDH/jdk-6u31-linux-amd64.rpm
-    
+
     echo "* Downloading Java Cryptography Extension (JCE) ..."
     wget --no-check-certificate --no-cookies --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com" http://download.oracle.com/otn-pub/java/jce_policy/6/jce_policy-6.zip -O /root/CDH/jce_policy-6.zip
-    [[ -d "/usr/java/default/jre/lib/security/" ]] && unzip -oj /root/CDH/jce_policy-6.zip -d /usr/java/default/jre/lib/security/   
+    [[ -d "/usr/java/default/jre/lib/security/" ]] && unzip -oj /root/CDH/jce_policy-6.zip -d /usr/java/default/jre/lib/security/
   else
     if !(command -v java >/dev/null 2>&1); then
       echo "* Oracle JDK 7u25 from CM..."
-      wget http://archive.cloudera.com/cm5/redhat/6/x86_64/cm/5/RPMS/x86_64/oracle-j2sdk1.7-1.7.0+update25-1.x86_64.rpm -O /root/CDH/oracle-j2sdk1.7-1.7.0+update25-1.x86_64.rpm 
+      wget http://archive.cloudera.com/cm5/redhat/6/x86_64/cm/5/RPMS/x86_64/oracle-j2sdk1.7-1.7.0+update25-1.x86_64.rpm -O /root/CDH/oracle-j2sdk1.7-1.7.0+update25-1.x86_64.rpm
       command -v java >/dev/null 2>&1 || rpm -ivh /root/CDH/oracle-j2sdk1.7-1.7.0+update25-1.x86_64.rpm
       ln -s /usr/java/jdk1.7.0_25-cloudera/ /usr/java/latest
-      ln -s /usr/java/latest /usr/java/default   
+      ln -s /usr/java/latest /usr/java/default
       update-alternatives --install /usr/bin/java java /usr/java/default/bin/java 10
       echo "* Downloading Java Cryptography Extension (JCE 7) ..."
       wget --no-check-certificate --no-cookies --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com" http://download.oracle.com/otn-pub/java/jce/7/UnlimitedJCEPolicyJDK7.zip -O /root/CDH/UnlimitedJCEPolicyJDK7.zip
-      [[ -d "/usr/java/default/jre/lib/security/" ]] && unzip -oj /root/CDH/UnlimitedJCEPolicyJDK7.zip -d /usr/java/default/jre/lib/security/      
-    fi    
+      [[ -d "/usr/java/default/jre/lib/security/" ]] && unzip -oj /root/CDH/UnlimitedJCEPolicyJDK7.zip -d /usr/java/default/jre/lib/security/
+    fi
   fi
+  echo "* Install MySQL Connector ..."
+  curl -L http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.26.tar.gz/from/http://cdn.mysql.com/ | tar xzv
+  [[ -d "/usr/share/java/" && ! -e "/usr/share/java/mysql-connector-java.jar" ]] && cp /root/CDH/mysql-connector-java-5.1.26/mysql-connector-java-5.1.26-bin.jar /usr/share/java/mysql-connector-java.jar
+  [[ -d "/opt/cloudera/parcels/CDH/lib/hive/lib/" && ! -e "/opt/cloudera/parcels/CDH/lib/hive/lib/mysql-connector-java.jar" ]] && ln -s /root/CDH/mysql-connector-java-5.1.26/mysql-connector-java-5.1.26-bin.jar /opt/cloudera/parcels/CDH/lib/hive/lib/mysql-connector-java.jar      
+  
 }
 
 function useBinInstaller {
@@ -80,7 +85,7 @@ startServices() {
   service $SERVICE_NAME start
  done
 }
- 
+
 stopServices() {
  for SERVICE_NAME in cloudera-scm-agent cloudera-scm-server cloudera-scm-server-db; do
   service $SERVICE_NAME stop
@@ -101,40 +106,44 @@ if [ $# -lt 1 ]; then
   usage
   exit 1
 fi
-#set -x    
+#set -x
+START_SCM_AGENT=''
+SERVER_DB=''
+JDK_VER=''
+
 stopServices
 for target in "$@"; do
   case "$target" in
   --ver*)
-    userpm $target
+    useRpm $target
     yum install -y cloudera-manager-daemons cloudera-manager-server cloudera-manager-agent
-    # if [ -z $start_scm_agent ] && promptyn "do you wish to start cloudera-scm-agent? [y/n]"; then 
+    # if [ -z $start_scm_agent ] && promptyn "do you wish to start cloudera-scm-agent? [y/n]"; then
       # echo "$start_scm_agent"
       # start_scm_agent=${start_scm_agent:-cloudera-scm-agent}
-    # fi     
+    # fi
     [[ -z /home/hdfs ]] || mkdir -p /home/hdfs && chown -r hdfs:hdfs /home/hdfs
     shift
     ;;
-  --psql)    
+  --psql)
     server_db=${server_db:-cloudera-manager-server-db}
-    yum install -y cloudera-manager-daemons cloudera-manager-server cloudera-manager-agent $server_db    
+    yum install -y cloudera-manager-daemons cloudera-manager-server cloudera-manager-agent $server_db
     shift
     ;;
-  --mysql)    
+  --mysql)
     sh /root/cdh/mysql-init.sh
     /usr/share/cmf/schema/scm_prepare_database.sh mysql scm scm password
     #/usr/share/cmf/schema/scm_prepare_database.sh mysql -h localhost -u temp -ppassword --scm-host localhost scm scm password
-    #yum install -y cloudera-manager-daemons cloudera-manager-server cloudera-manager-agent    
+    #yum install -y cloudera-manager-daemons cloudera-manager-server cloudera-manager-agent
     shift
     ;;
   --lic)
     managersettings
     shift
-    ;;  
+    ;;
   --bin)
     usebininstaller
     shift
-    ;;  
+    ;;
   --jdk*)
     installJava $target
     shift
@@ -142,7 +151,7 @@ for target in "$@"; do
   *)
     echo $target
     usage
-    exit 1    
+    exit 1
   esac
 done
 startServices
