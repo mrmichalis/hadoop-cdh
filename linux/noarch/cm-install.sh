@@ -137,11 +137,11 @@ for target in "$@"; do
     shift
     ;;
   --lic)
-    managersettings
+    managerSettings
     shift
     ;;
   --bin)
-    usebininstaller
+    useBinInstaller
     shift
     ;;
   --jdk*)
