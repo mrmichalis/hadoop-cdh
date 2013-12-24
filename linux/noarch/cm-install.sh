@@ -133,7 +133,7 @@ for target in "$@"; do
     shift
     ;;
   --mysql)
-    sh /root/cdh/mysql-init.sh
+    sh /root/CDH/mysql-init.sh
     /usr/share/cmf/schema/scm_prepare_database.sh mysql scm scm password
     #/usr/share/cmf/schema/scm_prepare_database.sh mysql -h localhost -u temp -ppassword --scm-host localhost scm scm password
     #yum install -y cloudera-manager-daemons cloudera-manager-server cloudera-manager-agent
