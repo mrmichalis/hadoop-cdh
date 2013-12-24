@@ -62,6 +62,9 @@ function installJava {
 }
 
 function useBinInstaller {
+  echo "* Downloading the latest Cloudera Manager installer ..."
+  wget -q "http://archive.cloudera.com/cm4/installer/latest/cloudera-manager-installer.bin" -O /root/CDH/cloudera-manager-installer.bin && chmod +x /root/CDH/cloudera-manager-installer.bin
+  
   ./cloudera-manager-installer.bin --i-agree-to-all-licenses --noprompt --noreadme --nooptions
   #./cloudera-manager-installer.bin --use_embedded_db=0 --db_pw=cloudera_scm --no-prompt --i-agree-to-all-licenses --noreadme
 }
