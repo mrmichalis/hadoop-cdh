@@ -33,13 +33,13 @@ if grep -q -i "Red Hat" /etc/redhat-release; then
   sed -i 's/1/0/g' /etc/yum/pluginconf.d/product-id.conf 
   sed -i 's/1/0/g' /etc/yum/pluginconf.d/subscription-manager.conf
 fi
-echo "192.168.88.250 archive.cloudera.com" >> /etc/hosts
-echo "192.168.88.250 beta.cloudera.com" >> /etc/hosts
+# echo "192.168.88.250 archive.cloudera.com" >> /etc/hosts
+# echo "192.168.88.250 beta.cloudera.com" >> /etc/hosts
 mkdir -p /root/CDH
 #end -init
 
-echo "* Downloading the latest Cloudera Manager installer ..."
-wget -q "http://archive.cloudera.com/cm4/installer/latest/cloudera-manager-installer.bin" -O /root/CDH/cloudera-manager-installer.bin && chmod +x /root/CDH/cloudera-manager-installer.bin
+# echo "* Downloading the latest Cloudera Manager installer ..."
+# wget -q "http://archive.cloudera.com/cm4/installer/latest/cloudera-manager-installer.bin" -O /root/CDH/cloudera-manager-installer.bin && chmod +x /root/CDH/cloudera-manager-installer.bin
 wget -q "https://github.com/mrmichalis/hadoop-cdh/raw/master/linux/noarch/.screenrc" -O /root/.screenrc 
 
 POST_OPTIONS=( dep-download.sh mysql-init.sh vboxadditions.sh orajava-install.sh getip.sh cm-install.sh krb5conf.sh mvn-ant-install.sh )
