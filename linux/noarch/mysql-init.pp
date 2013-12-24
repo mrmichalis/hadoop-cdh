@@ -1,0 +1,105 @@
+# https://github.com/mrmichalis/vagrant-puppet-mysql/blob/b7f57d3bc47ab3187a0faeb658f56660fbb2c117/manifests/init.pp
+# http://bitfieldconsulting.com/puppet-and-mysql-create-databases-and-users
+include mysql::server
+class mysql::server {
+  $bin = '/usr/bin:/usr/sbin'
+  $root_password= ''
+
+  package { "mysql-server": ensure => installed }
+  package { "mysql": ensure => installed }
+
+  service { "mysqld":
+    enable => true,
+    ensure => running,
+    require => Package["mysql-server"],
+  }
+  # Set the root password.
+  exec { 'mysql::set_root_password':
+    unless  => "mysqladmin -uroot -p${root_password} status",
+    command => "mysqladmin -uroot password ${root_password}",
+    path    => $bin,
+    require => Service['mysqld'],
+  }
+  
+}
+
+define mysql::db::create ($dbname = $title) {
+  exec { "mysql::db::create_${dbname}":
+    command => "mysql -uroot -e \"CREATE DATABASE IF NOT EXISTS ${dbname} DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci\"",
+    path    => $mysql::server::bin,
+  }
+}
+define mysql::user::grant ($user = $title, $host, $password, $database, $table = '*', $privileges = 'ALL PRIVILEGES') {
+  exec { "mysql::user::grant_${user}_${host}_${database}_${table}_${privileges}":
+    command => "mysql -uroot -e \"GRANT ${privileges} ON ${database}.${table} TO '${user}'@'${host}' IDENTIFIED BY '${password}'; FLUSH PRIVILEGES;\"",
+    path    => $mysql::server::bin,
+  }
+}
+
+mysql::db::create { ['scm','hue','amon','smon','rman','hmon','nav','hive','temp']: }
+mysql::user::grant { 'scm_all_privileges':
+  user     => 'scm',
+  host     => 'localhost',
+  password => 'password',
+  database => '*',
+}
+mysql::user::grant { 'hue_all_privileges':
+  user     => 'hue',
+  host     => 'localhost',
+  password => 'password',
+  database => '*',
+}
+mysql::user::grant { 'amon_all_privileges':
+  user     => 'amon',
+  host     => 'localhost',
+  password => 'password',
+  database => '*',
+}
+mysql::user::grant { 'smon_all_privileges':
+  user     => 'smon',
+  host     => 'localhost',
+  password => 'password',
+  database => '*',
+}
+mysql::user::grant { 'rman_all_privileges':
+  user     => 'rman',
+  host     => 'localhost',
+  password => 'password',
+  database => '*',
+}
+mysql::user::grant { 'hmon_all_privileges':
+  user     => 'hmon',
+  host     => 'localhost',
+  password => 'password',
+  database => '*',
+}
+mysql::user::grant { 'nav_all_privileges':
+  user     => 'nav',
+  host     => 'localhost',
+  password => 'password',
+  database => '*',
+}
+mysql::user::grant { 'hive_all_privileges':
+  user     => 'hive',
+  host     => 'localhost',
+  password => 'password',
+  database => '*',
+}
+mysql::user::grant { 'hive_all_hosts':
+  user     => 'hive',
+  host     => '%',
+  password => 'password',
+  database => '*',
+}
+mysql::user::grant { 'hive_all_lunix_lan':
+  user     => 'hive',
+  host     => '%.lunix.lan',
+  password => 'password',
+  database => '*',
+}
+mysql::user::grant { 'root_all_privileges':
+  user     => 'root',
+  host     => 'archive.cloudera.com',
+  password => 'password',
+  database => '*',
+}
