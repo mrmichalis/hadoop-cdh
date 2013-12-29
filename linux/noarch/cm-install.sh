@@ -56,7 +56,7 @@ function installJava {
   fi
   echo "* Set JAVA_HOME in /etc/profile.d/jdk.sh ..."
   echo 'export JAVA_HOME=/usr/java/default' > /etc/profile.d/jdk.sh
-  echo 'export PATH=\$JAVA_HOME/bin:\$PATH' >> /etc/profile.d/jdk.sh
+  echo 'export PATH=$JAVA_HOME/bin:$PATH' >> /etc/profile.d/jdk.sh
 
   echo "* Install MySQL Connector ..."
   curl -L http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.28.tar.gz | tar xzv
