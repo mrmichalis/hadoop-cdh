@@ -16,7 +16,7 @@ if [ "\$PS1" != "" -a "\${STARTED_SCREEN:-x}" = x -a "\${SSH_TTY:-x}" != x ]
 then
   STARTED_SCREEN=1 ; export STARTED_SCREEN
   [ -d \$HOME/lib/screen-logs ] || mkdir -p \$HOME/lib/screen-logs
-  sleep 1
+  sleep `
   screen -RR && exit 0
   # normally, execution of this rc script ends here...
   echo "Screen failed! continuing with normal bash startup"
@@ -42,7 +42,7 @@ mkdir -p /root/CDH
 # wget -q "http://archive.cloudera.com/cm4/installer/latest/cloudera-manager-installer.bin" -O /root/CDH/cloudera-manager-installer.bin && chmod +x /root/CDH/cloudera-manager-installer.bin
 wget -q "https://github.com/mrmichalis/hadoop-cdh/raw/master/linux/noarch/.screenrc" -O /root/.screenrc 
 
-POST_OPTIONS=( dep-download.sh mysql-init.sh vboxadditions.sh orajava-install.sh getip.sh cm-install.sh krb5conf.sh mvn-ant-install.sh )
+POST_OPTIONS=( dep-download.sh mysql-init.sh mysql-init.pp vboxadditions.sh orajava-install.sh getip.sh cm-install.sh krb5conf.sh mvn-ant-install.sh )
 for OPT in ${POST_OPTIONS[@]}; do
   wget -q "https://github.com/mrmichalis/hadoop-cdh/raw/master/linux/noarch/${OPT}" -O /root/CDH/${OPT} && chmod +x /root/CDH/${OPT}  
 done;

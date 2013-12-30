@@ -113,26 +113,25 @@ if [ $# -lt 1 ]; then
   exit 1
 fi
 #set -x
-START_SCM_AGENT=''
-SERVER_DB=''
-JDK_VER=''
+START_SCM_AGENT=
+SERVER_DB=
+JDK_VER=
 
 stopServices
 for target in "$@"; do
   case "$target" in
+  --jdk*)
+    installJava $target
+    shift
+    ;;
   --ver*)
     useRpm $target
     yum install -y cloudera-manager-daemons cloudera-manager-server cloudera-manager-agent
-    # if [ -z $start_scm_agent ] && promptyn "do you wish to start cloudera-scm-agent? [y/n]"; then
-      # echo "$start_scm_agent"
-      # start_scm_agent=${start_scm_agent:-cloudera-scm-agent}
-    # fi
-    [[ -z /home/hdfs ]] || mkdir -p /home/hdfs && chown -r hdfs:hdfs /home/hdfs
     shift
     ;;
   --psql)
     server_db=${server_db:-cloudera-manager-server-db}
-    yum install -y cloudera-manager-daemons cloudera-manager-server cloudera-manager-agent $server_db
+    yum install -y $server_db
     shift
     ;;
   --mysql)
@@ -148,10 +147,6 @@ for target in "$@"; do
     ;;
   --bin)
     useBinInstaller
-    shift
-    ;;
-  --jdk*)
-    installJava $target
     shift
     ;;
   *)

@@ -12,14 +12,10 @@ echo "Install Ant 1.9.2"
 curl -L http://apache.mirror.anlx.net//ant/binaries/apache-ant-1.9.2-bin.tar.gz -o apache-ant-1.9.2-bin.tar.gz
 tar xzvf apache-ant-1.9.2-bin.tar.gz -C /usr/local/ && ln -s /usr/local/apache-ant-1.9.2/ /usr/local/ant
 
-echo "Modify .bash_profile"
-sed -i "s/PATH=/#PATH=/g" ~/.bash_profile
-sed -i "s/export PATH/#export PATH/g" ~/.bash_profile
+echo "* Set ANT_HOME in /etc/profile.d/ant.sh ..."
+echo 'export ANT_HOME=/usr/local/ant' > /etc/profile.d/ant.sh
+echo 'export PATH=$ANT_HOME/bin:$PATH' >> /etc/profile.d/ant.sh
 
-cat << EOF >> ~/.bash_profile
-JAVA_HOME=/usr/java/default
-ANT_HOME=/usr/local/ant
-M2_HOME=/usr/local/maven
-PATH=\${JAVA_HOME}/bin:\${M2_HOME}/bin:\${ANT_HOME}/bin:\${PATH}:\${HOME}/bin
-export PATH M2_HOME ANT_HOME JAVA_HOME
-EOF
+echo "* Set MVN_HOME in /etc/profile.d/mvn.sh ..."
+echo 'export MVN_HOME=/usr/local/ant' > /etc/profile.d/mvn.sh
+echo 'export PATH=$MVN_HOME/bin:$PATH' >> /etc/profile.d/mvn.sh

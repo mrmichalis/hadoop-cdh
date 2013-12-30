@@ -61,6 +61,7 @@ cat <<EOF
 adduser mko -G hdfs,hadoop,root -u 10001 -d /home/mko -m
 sudo -u hdfs hadoop fs -mkdir /user/mko
 sudo -u hdfs hadoop fs -chown mko:supergroup /user/mko
+mkdir -p /home/hdfs && chown -r hdfs:hdfs /home/hdfs
 EOF
 # curl -v -u mko:xxxxx --negotiate http://$(hostname -f):50070/dfshealth.jsp
 # userdel -f -r mko 
