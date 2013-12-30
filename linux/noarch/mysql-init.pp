@@ -27,12 +27,15 @@ define mysql::db::create ($dbname = $title) {
   exec { "mysql::db::create_${dbname}":
     command => "mysql -uroot -e \"CREATE DATABASE IF NOT EXISTS ${dbname} DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci\"",
     path    => $mysql::server::bin,
+    require => Service['mysqld'],
   }
 }
+
 define mysql::user::grant ($user = $title, $host, $password, $database, $table = '*', $privileges = 'ALL PRIVILEGES') {
   exec { "mysql::user::grant_${user}_${host}_${database}_${table}_${privileges}":
     command => "mysql -uroot -e \"GRANT ${privileges} ON ${database}.${table} TO '${user}'@'${host}' IDENTIFIED BY '${password}'; FLUSH PRIVILEGES;\"",
     path    => $mysql::server::bin,
+    require => Service['mysqld'],
   }
 }
 
