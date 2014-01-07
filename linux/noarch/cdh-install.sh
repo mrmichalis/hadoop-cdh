@@ -27,12 +27,3 @@ sudo -u hdfs hadoop fs -ls -R /
 for x in `cd /etc/init.d ; ls hadoop-0.20-mapreduce-*` ; do sudo service $x start ; done
 
 sudo -u hdfs hadoop jar /usr/lib/hadoop-0.20-mapreduce/hadoop-examples.jar pi 10 10
-
-
-"use_embedded_db"
-
-mysql -u root -e "CREATE DATABASE IF NOT EXISTS cloudera_scm DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;"
-mysql -u root -e "GRANT ALL ON *.* TO 'cloudera_scm'@'localhost' IDENTIFIED BY 'cloudera_scm' WITH GRANT OPTION;"
-mysql -u root -e "GRANT ALL ON *.* TO '$service'@'$(hostname -f)' IDENTIFIED BY 'password' WITH GRANT OPTION;"
-mysql -u root -e "GRANT ALL ON *.* TO '$service'@'%.lunix.co' IDENTIFIED BY 'password' WITH GRANT OPTION;"
-mysql -u root -e "GRANT ALL ON *.* TO '$service'@'%' IDENTIFIED BY 'password' WITH GRANT OPTION;"
