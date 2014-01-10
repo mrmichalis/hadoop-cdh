@@ -3,7 +3,7 @@
 include mysql::server
 class mysql::server {
   $bin = '/usr/bin:/usr/sbin'
-  $root_password= ''
+  $root_password= 'password'
 
   package { "mysql-server": ensure => installed }
   package { "mysql": ensure => installed }
@@ -16,7 +16,7 @@ class mysql::server {
   # Set the root password.
   exec { 'mysql::set_root_password':
     unless  => "mysqladmin -uroot -p${root_password} status",
-    command => "mysqladmin -uroot password ${root_password}",
+    command => "mysqladmin -uroot -p${root_password}",
     path    => $bin,
     require => Service['mysqld'],
   }
@@ -24,16 +24,20 @@ class mysql::server {
 }
 
 define mysql::db::create ($dbname = $title) {
+  $root_password = 'password'
+
   exec { "mysql::db::create_${dbname}":
-    command => "mysql -uroot -e \"CREATE DATABASE IF NOT EXISTS ${dbname} DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci\"",
+    command => "mysql -uroot -p${root_password} -e \"CREATE DATABASE IF NOT EXISTS ${dbname} DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci\"",
     path    => $mysql::server::bin,
     require => Service['mysqld'],
   }
 }
 
 define mysql::user::grant ($user = $title, $host, $password, $database, $table = '*', $privileges = 'ALL PRIVILEGES') {
+  $root_password = 'password'
+
   exec { "mysql::user::grant_${user}_${host}_${database}_${table}_${privileges}":
-    command => "mysql -uroot -e \"GRANT ${privileges} ON ${database}.${table} TO '${user}'@'${host}' IDENTIFIED BY '${password}'; FLUSH PRIVILEGES;\"",
+    command => "mysql -uroot -p${root_password} -e \"GRANT ${privileges} ON ${database}.${table} TO '${user}'@'${host}' IDENTIFIED BY '${password}'; FLUSH PRIVILEGES;\"",
     path    => $mysql::server::bin,
     require => Service['mysqld'],
   }
@@ -76,33 +80,57 @@ mysql::user::grant { 'hmon_all_privileges':
   password => 'password',
   database => '*',
 }
-mysql::user::grant { 'nav_all_privileges':
+mysql::user::grant { 'scm_all_privileges_lunix_lan':
+  user     => 'scm',
+  host     => $fqdn,
+  password => 'password',
+  database => '*',
+}
+mysql::user::grant { 'hue_all_privileges_lunix_lan':
+  user     => 'hue',
+  host     => $fqdn,
+  password => 'password',
+  database => '*',
+}
+mysql::user::grant { 'amon_all_privileges_lunix_lan':
+  user     => 'amon',
+  host     => $fqdn,
+  password => 'password',
+  database => '*',
+}
+mysql::user::grant { 'smon_all_privileges_lunix_lan':
+  user     => 'smon',
+  host     => $fqdn,
+  password => 'password',
+  database => '*',
+}
+mysql::user::grant { 'rman_all_privileges_lunix_lan':
+  user     => 'rman',
+  host     => $fqdn,
+  password => 'password',
+  database => '*',
+}
+mysql::user::grant { 'hmon_all_privileges_lunix_lan':
+  user     => 'hmon',
+  host     => $fqdn,
+  password => 'password',
+  database => '*',
+}
+mysql::user::grant { 'nav_all_privileges_lunix_lan':
   user     => 'nav',
-  host     => 'localhost',
+  host     => $fqdn,
   password => 'password',
   database => '*',
 }
-mysql::user::grant { 'hive_all_privileges':
+mysql::user::grant { 'hive_all_privileges_lunix_lan':
   user     => 'hive',
-  host     => 'localhost',
+  host     => $fqdn,
   password => 'password',
   database => '*',
 }
-mysql::user::grant { 'hive_all_hosts':
-  user     => 'hive',
-  host     => '%',
-  password => 'password',
-  database => '*',
-}
-mysql::user::grant { 'hive_all_lunix_lan':
-  user     => 'hive',
-  host     => '%.lunix.lan',
-  password => 'password',
-  database => '*',
-}
-mysql::user::grant { 'root_all_privileges':
+mysql::user::grant { 'root_all_privileges_hosts':
   user     => 'root',
-  host     => 'archive.cloudera.com',
+  host     => '%',
   password => 'password',
   database => '*',
 }
