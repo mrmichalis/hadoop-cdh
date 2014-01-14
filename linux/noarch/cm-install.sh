@@ -3,7 +3,7 @@
 usage() {
   VERTMP=$(wget -qO - http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/ | awk 'BEGIN{ RS="<a *href *= *\""} NR>2 {sub(/".*/,"|");print;}' | grep "^4" | tr "/" " " | tr "\n" " ")
 cat << EOF
-  usage: ./cm-install.sh --bin or --ver=4.8.0 [--psql OR --mysql] --jdk=[6 or 7]
+  usage: $0 --bin or --ver=4.8.0 [--psql OR --mysql] --jdk=[6 or 7]
   Options
     --bin                :   Use latest installer
     --ver [4.7.2]        :   Install/Upgrade version
@@ -17,7 +17,7 @@ cat << EOF
     --jdk=[6 or 7]     :   Install with JDK 6 or JDK 7
   
   Example
-    ./cm-install.sh --ver=4.8.0 --mysql --jdk=6
+    $0 --ver=4.8.0 --mysql --jdk=6
 EOF
 
 }

@@ -3,7 +3,6 @@
 include mysql::server
 class mysql::server {
   $bin = '/usr/bin:/usr/sbin'
-  $root_password= 'password'
 
   package { "mysql-server": ensure => installed }
   package { "mysql": ensure => installed }
@@ -14,28 +13,23 @@ class mysql::server {
     require => Package["mysql-server"],
   }
   # Set the root password.
-  exec { 'mysql::set_root_password':
-    unless  => "mysqladmin -uroot status",
-    command => "mysqladmin -uroot password ${root_password}",
-    path    => $bin,
-    require => Service['mysqld'],
-  }
-  
+  # exec { 'mysql::set_root_password':
+    # unless  => "mysqladmin -uroot status",
+    # command => "mysqladmin -uroot password ${root_password}",
+    # path    => $bin,
+    # require => Service['mysqld'],
+  # } 
 }
 
 define mysql::db::create ($dbname = $title) {
-  $root_password = 'password'
-
   exec { "mysql::db::create_${dbname}":
-    command => "mysql -uroot -p${root_password} -e \"CREATE DATABASE IF NOT EXISTS ${dbname} DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci\"",
+    command => "mysql -uroot -e \"CREATE DATABASE IF NOT EXISTS ${dbname} DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci\"",
     path    => $mysql::server::bin,
     require => Service['mysqld'],
   }
 }
 
 define mysql::user::grant ($user = $title, $host, $password, $database, $table = '*', $privileges = 'ALL PRIVILEGES') {
-  $root_password = 'password'
-
   exec { "mysql::user::grant_${user}_${host}_${database}_${table}_${privileges}":
     command => "mysql -uroot -p${root_password} -e \"GRANT ${privileges} ON ${database}.${table} TO '${user}'@'${host}' IDENTIFIED BY '${password}'; FLUSH PRIVILEGES;\"",
     path    => $mysql::server::bin,
@@ -131,6 +125,12 @@ mysql::user::grant { 'hive_all_privileges_lunix_lan':
 mysql::user::grant { 'root_all_privileges_hosts':
   user     => 'root',
   host     => '%',
+  password => 'password',
+  database => '*',
+}
+mysql::user::grant { 'root_all_privileges_archive_cloudera_com':
+  user     => 'root',
+  host     => 'archive.cloudera.com',
   password => 'password',
   database => '*',
 }
