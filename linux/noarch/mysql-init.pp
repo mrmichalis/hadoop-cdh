@@ -15,8 +15,8 @@ class mysql::server {
   }
   # Set the root password.
   exec { 'mysql::set_root_password':
-    unless  => "mysqladmin -uroot -p${root_password} status",
-    command => "mysqladmin -uroot -p${root_password}",
+    unless  => "mysqladmin -uroot status",
+    command => "mysqladmin -uroot password ${root_password}",
     path    => $bin,
     require => Service['mysqld'],
   }

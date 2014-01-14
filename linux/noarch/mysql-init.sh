@@ -37,7 +37,7 @@ puppet apply /root/CDH/mysql-init.pp
 mysql -u root -e 'show databases;'
 
 echo "* Install MySQL Connector ..."
-curl -L http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.28.tar.gz | tar xzv
+[[ ! -e "/usr/share/java/mysql-connector-java.jar" ]] && curl -L http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.28.tar.gz | tar xzv
 [[ -d "/usr/share/java/" && ! -e "/usr/share/java/mysql-connector-java.jar" ]] && cp /root/CDH/mysql-connector-java-5.1.28/mysql-connector-java-5.1.28-bin.jar /usr/share/java/mysql-connector-java.jar
 [[ -d "/opt/cloudera/parcels/CDH/lib/hive/lib/" && ! -e "/opt/cloudera/parcels/CDH/lib/hive/lib/mysql-connector-java.jar" ]] && ln -s /root/CDH/mysql-connector-java-5.1.28/mysql-connector-java-5.1.28-bin.jar /opt/cloudera/parcels/CDH/lib/hive/lib/mysql-connector-java.jar      
 
