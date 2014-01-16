@@ -37,7 +37,7 @@ define mysql::user::grant ($user = $title, $host, $password, $database, $table =
   }
 }
 
-mysql::db::create { ['scm','hue','amon','smon','rman','hmon','nav','hive','temp']: }
+mysql::db::create { ['scm','hue','amon','smon','rman','hmon','nav','hive','temp','oozie']: }
 mysql::user::grant { 'scm_all_privileges':
   user     => 'scm',
   host     => 'localhost',
@@ -70,6 +70,18 @@ mysql::user::grant { 'rman_all_privileges':
 }
 mysql::user::grant { 'hmon_all_privileges':
   user     => 'hmon',
+  host     => 'localhost',
+  password => 'password',
+  database => '*',
+}
+mysql::user::grant { 'hive_all_privileges':
+  user     => 'hive',
+  host     => 'localhost',
+  password => 'password',
+  database => '*',
+}
+mysql::user::grant { 'oozie_all_privileges':
+  user     => 'oozie',
   host     => 'localhost',
   password => 'password',
   database => '*',
@@ -118,6 +130,12 @@ mysql::user::grant { 'nav_all_privileges_lunix_lan':
 }
 mysql::user::grant { 'hive_all_privileges_lunix_lan':
   user     => 'hive',
+  host     => $fqdn,
+  password => 'password',
+  database => '*',
+}
+mysql::user::grant { 'oozie_all_privileges_lunix_lan':
+  user     => 'oozie',
   host     => $fqdn,
   password => 'password',
   database => '*',
