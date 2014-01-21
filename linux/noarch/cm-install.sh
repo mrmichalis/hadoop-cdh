@@ -128,8 +128,8 @@ for target in "$@"; do
     shift
     ;;
   --psql)
-    server_db=${server_db:-cloudera-manager-server-db}
-    yum install -y $server_db
+    SERVER_DB=${server_db:-cloudera-manager-server-db}
+    yum install -y $SERVER_DB
     shift
     ;;
   --mysql)
