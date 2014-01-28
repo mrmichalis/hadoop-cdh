@@ -85,9 +85,10 @@ EOF
 }
 
 startServices() {
- for SERVICE_NAME in $SERVER_DB cloudera-scm-server $START_SCM_AGENT; do
+ for SERVICE_NAME in cloudera-scm-server $START_SCM_AGENT; do
   service $SERVICE_NAME start
  done
+ [ ! -z "${SERVER_DB+xxx}" ] && [ "${SERVER_DB+xxx}" = "xxx" ] && service cloudera-scm-server-db start
 }
 
 stopServices() {
