@@ -19,7 +19,6 @@ cat << EOF
   Example
     $0 --ver=4.8.0 --mysql --jdk=6
 EOF
-
 }
 
 function promptyn () {
@@ -85,10 +84,10 @@ EOF
 }
 
 startServices() {
+ [ ! -z "${SERVER_DB+xxx}" ] && [ "${SERVER_DB+xxx}" = "xxx" ] && service cloudera-scm-server-db start
  for SERVICE_NAME in cloudera-scm-server $START_SCM_AGENT; do
   service $SERVICE_NAME start
  done
- [ ! -z "${SERVER_DB+xxx}" ] && [ "${SERVER_DB+xxx}" = "xxx" ] && service cloudera-scm-server-db start
 }
 
 stopServices() {
