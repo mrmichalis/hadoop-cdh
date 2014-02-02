@@ -1,0 +1,10 @@
+cm-api-default.sh
+cm-install.sh
+dep-download.sh
+getip.sh
+krb5conf.sh
+mvn-ant-install.sh
+mysql-init.pp
+mysql-init.sh
+orajava-install.sh
+vboxadditions.sh

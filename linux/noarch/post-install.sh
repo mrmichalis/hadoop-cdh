@@ -41,8 +41,9 @@ mkdir -p /root/CDH
 # echo "* Downloading the latest Cloudera Manager installer ..."
 # wget -q "http://archive.cloudera.com/cm4/installer/latest/cloudera-manager-installer.bin" -O /root/CDH/cloudera-manager-installer.bin && chmod +x /root/CDH/cloudera-manager-installer.bin
 wget -q "https://github.com/mrmichalis/hadoop-cdh/raw/master/linux/noarch/.screenrc" -O /root/.screenrc 
+wget -q "https://github.com/mrmichalis/hadoop-cdh/raw/master/linux/noarch/post-download.lst" -O /root/CDH/post-download.lst 
 
-POST_OPTIONS=( dep-download.sh mysql-init.sh mysql-init.pp vboxadditions.sh orajava-install.sh getip.sh cm-install.sh krb5conf.sh mvn-ant-install.sh )
+POST_OPTIONS=$(cat /root/CDH/post-download.lst)
 for OPT in ${POST_OPTIONS[@]}; do
   wget -q "https://github.com/mrmichalis/hadoop-cdh/raw/master/linux/noarch/${OPT}" -O /root/CDH/${OPT} && chmod +x /root/CDH/${OPT}  
 done;
