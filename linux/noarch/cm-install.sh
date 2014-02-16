@@ -21,17 +21,6 @@ cat << EOF
 EOF
 }
 
-function promptyn () {
-  while true; do
-    read -p "$1 " yn
-    case $yn in
-      [Yy]* ) return 0;;
-      [Nn]* ) return 1;;
-      * ) echo "Please answer with [y]es or [n]o.";;
-    esac
-  done
-}
-
 function installJava {
   JDK_VER=`echo $1 | sed -e 's/^[^=]*=//g'`
   echo $JDK_VER

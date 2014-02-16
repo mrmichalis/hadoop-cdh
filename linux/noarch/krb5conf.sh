@@ -6,6 +6,17 @@ if [ $# -lt 1 ]; then
     echo "usage: $0 [REALM i.e. LUNIX.LAN]" 1>&2
     exit 1
 fi
+# http://stackoverflow.com/a/12202793
+function promptyn () {
+  while true; do
+    read -p "$1 " yn
+    case ${yn:-$2} in
+      [Yy]* ) return 0;;
+      [Nn]* ) return 1;;
+      * ) echo "Please answer with [y]es or [n]o.";;
+    esac
+  done
+}
 
 #pre-req
 yum install krb5-server krb5-workstation krb5-libs -y
@@ -58,11 +69,52 @@ chmod 0600 /etc/cloudera-scm-server/cmf.keytab /etc/cloudera-scm-server/cmf.prin
 dd if=/dev/urandom of=/etc/hadoop/hadoop-http-auth-signature-secret bs=1024 count=1
 echo "Additional Kerberos post-conf"
 cat <<EOF
-adduser mko -G hdfs,hadoop,root -u 10001 -d /home/mko -m
+groupadd supergroup -g 10001
+adduser mko -G supergroup,hdfs,hadoop,root -u 10002 -d /home/mko -m
 sudo -u hdfs hadoop fs -mkdir /user/mko
 sudo -u hdfs hadoop fs -chown mko:supergroup /user/mko
-mkdir -p /home/hdfs && chown -r hdfs:hdfs /home/hdfs
+mkdir -p /home/hdfs && chown -R hdfs:hdfs /home/hdfs
 EOF
 # curl -v -u mko:xxxxx --negotiate http://$(hostname -f):50070/dfshealth.jsp
 # userdel -f -r mko 
 # usermod -a -G root mko
+
+if promptyn "Setup Kerberos in CM via API?"; then
+  kerberos_cmapi()
+fi
+
+function kerberos_cmapi() { 
+  curl -X PUT -H 'Content-Type:application/json' -u admin:admin -d '{
+    "items" : [ {
+        "name" : "SECURITY_REALM",
+        "value" : "$REALM"
+    } ]
+  }' http://$(hostname -f):7180/api/v4/cm/config
+
+  curl -X PUT -H 'Content-Type:application/json' -u admin:admin -d '{
+    "items" : [ {
+      "name" : "hadoop_security_authentication",
+      "value" : "kerberos"
+    }, {
+      "name" : "hadoop_security_authorization",
+      "value" : "true"
+    } ]
+  }' http://$(hostname -f):7180/api/v4/clusters/Cluster%201%20-%20CDH4/services/hdfs1/config
+
+  curl -X PUT -H 'Content-Type:application/json' -u admin:admin -d '{
+    "items" : [ {
+      "name" : "dfs_datanode_http_port",
+      "value" : "1006"
+    }, {
+      "name" : "dfs_datanode_port",
+      "value" : "1004"
+    } ]
+  }' http://$(hostname -f):7180/api/v4/clusters/Cluster%201%20-%20CDH4/services/hdfs1/roleConfigGroups/hdfs1-DATANODE-BASE/config
+
+  curl -X PUT -H 'Content-Type:application/json' -u admin:admin -d '{
+    "items" : [ {
+      "name" : "enableSecurity",
+      "value" : "true"
+    } ]
+  }' http://$(hostname -f):7180/api/v4/clusters/Cluster%201%20-%20CDH4/services/zookeeper1/config
+}

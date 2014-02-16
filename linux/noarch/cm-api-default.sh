@@ -3,6 +3,9 @@ curl -X PUT -H 'Content-Type:application/json' -u admin:admin -d '{
   {
     "name" : "SESSION_TIMEOUT",
     "value" : "359999999999996416"
+  },{
+      "name" : "SECURITY_REALM",
+      "value" : "LUNIX.LAN"
   }
 ]
 }' http://$(hostname -f):7180/api/v4/cm/config
