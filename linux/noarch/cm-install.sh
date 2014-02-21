@@ -18,7 +18,7 @@ cat << EOF
     --jdk=[6 or 7]     :   Install with JDK 6 or JDK 7
   
   Example:
-    $0 --ver=${VERLATEST} --db=p --jdk=6
+    $0 --ver=${VERLATEST} --db=e --jdk=6
 EOF
 }
 
@@ -141,8 +141,8 @@ if [[ -z $USEBIN ]]; then
   echo Installing JDK $JDK_VER
   installJava $JDK_VER
   echo Set cloudera-manager.repo to CM v$CMVERSION
-  echo useRpm $CMVERSION
-  echo yum install -y cloudera-manager-daemons cloudera-manager-server cloudera-manager-agent
+  useRpm $CMVERSION
+  yum install -y cloudera-manager-daemons cloudera-manager-server cloudera-manager-agent
   if [[ $SERVER_DB = "p" ]]; then
     echo Initialize MySQL
     sh /root/CDH/mysql-init.sh
