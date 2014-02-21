@@ -80,7 +80,7 @@ EOF
 # usermod -a -G root mko
 
 if promptyn "Setup Kerberos in CM via API?"; then
-  kerberos_cmapi()
+  kerberos_cmapi
 fi
 
 function kerberos_cmapi() { 

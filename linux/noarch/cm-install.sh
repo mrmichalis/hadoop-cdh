@@ -2,29 +2,29 @@
 
 usage() {
   VERTMP=$(wget -qO - http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/ | awk 'BEGIN{ RS="<a *href *= *\""} NR>2 {sub(/".*/,"|");print;}' | grep "^4" | tr "/" " " | tr "\n" " ")
+  VERLATEST=$(wget -qO - http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/ | awk 'BEGIN{ RS="<a *href *= *\""} NR>2 {sub(/".*/,"");print;}' | grep "^4" | tail -2 | head -1 | tr "/" " " )
 cat << EOF
   usage: $0 --bin or --ver=4.8.0 [--psql OR --mysql] --jdk=[6 or 7]
   Options
     --bin                :   Use latest installer
     --ver [4.7.2]        :   Install/Upgrade version
-    Available versions  :   $VERTMP
+    Available versions   :   ${VERTMP}
 
-  Optional if none-selected this will be MySQL
-    --psql               :   Install/Upgrade cloudera-manager-server-db
-    --mysql              :   Prepare MySQL Database
+  Optional if none-selected this will be Embedded PSQL
+    --db=e               :   Install/Upgrade cloudera-manager-server-db                             
+    --db=m               :   Prepare MySQL Database
 
   JDK (default JDK6)
     --jdk=[6 or 7]     :   Install with JDK 6 or JDK 7
   
-  Example
-    $0 --ver=4.8.0 --mysql --jdk=6
+  Example:
+    $0 --ver=${VERLATEST} --db=p --jdk=6
 EOF
 }
 
 function installJava {
-  JDK_VER=`echo $1 | sed -e 's/^[^=]*=//g'`
-  echo $JDK_VER
-  if [ $JDK_VER -ne "7" ]; then
+  echo $1
+  if [ $1 -ne "7" ]; then
     echo "* Oracle JDK 6u31 from CM..."
     command -v java >/dev/null 2>&1 || wget http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/4/RPMS/x86_64/jdk-6u31-linux-amd64.rpm -O /root/CDH/jdk-6u31-linux-amd64.rpm
     command -v java >/dev/null 2>&1 || rpm -ivh /root/CDH/jdk-6u31-linux-amd64.rpm
@@ -50,30 +50,23 @@ function installJava {
   echo 'export PATH=$JAVA_HOME/bin:$PATH' >> /etc/profile.d/jdk.sh
 }
 
-function useBinInstaller {
-  echo "* Downloading the latest Cloudera Manager installer ..."
-  wget -q "http://archive.cloudera.com/cm4/installer/latest/cloudera-manager-installer.bin" -O /root/CDH/cloudera-manager-installer.bin && chmod +x /root/CDH/cloudera-manager-installer.bin
-  
-  ./cloudera-manager-installer.bin --i-agree-to-all-licenses --noprompt --noreadme --nooptions
-  #./cloudera-manager-installer.bin --use_embedded_db=0 --db_pw=cloudera_scm --no-prompt --i-agree-to-all-licenses --noreadme
-}
-
 function useRpm {
   yum clean all
-  CMVERSION=`echo $1 | sed -e 's/^[^=]*=//g'`
   rpm --import http://archive.cloudera.com/cdh4/redhat/6/x86_64/cdh/RPM-GPG-KEY-cloudera
   cat << EOF > /etc/yum.repos.d/cloudera-manager.repo
 [cloudera-manager]
 # Packages for Cloudera Manager, Version 4, on RedHat or CentOS 6 x86_64
 name=Cloudera Manager
-baseurl=http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/$CMVERSION/
+baseurl=http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/$1/
 gpgkey = http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/RPM-GPG-KEY-cloudera
 gpgcheck = 1
 EOF
 }
 
 startServices() {
- [ ! -z "${SERVER_DB+xxx}" ] && [ "${SERVER_DB+xxx}" = "xxx" ] && service cloudera-scm-server-db start
+ if [[ $SERVER_DB = "e" ]]; then 
+  service cloudera-scm-server-db start
+ fi
  for SERVICE_NAME in cloudera-scm-server $START_SCM_AGENT; do
   service $SERVICE_NAME start
  done
@@ -101,39 +94,31 @@ if [ $# -lt 1 ]; then
 fi
 #set -x
 START_SCM_AGENT=
-SERVER_DB=
-JDK_VER=
+SERVER_DB=${SERVER_DB:-e}
+JDK_VER=${JDK_VER:-6}
+CMVERSION=${VERLATEST}
 
-stopServices
 for target in "$@"; do
   case "$target" in
-  --jdk*)
-    installJava $target
-    shift
-    ;;
   --ver*)
-    useRpm $target
-    yum install -y cloudera-manager-daemons cloudera-manager-server cloudera-manager-agent
-    shift
-    ;;
-  --psql)
-    SERVER_DB=${server_db:-cloudera-manager-server-db}
-    yum install -y $SERVER_DB
-    shift
-    ;;
-  --mysql)
-    sh /root/CDH/mysql-init.sh
-    /usr/share/cmf/schema/scm_prepare_database.sh mysql scm scm password
-    #/usr/share/cmf/schema/scm_prepare_database.sh mysql -h localhost -u temp -ppassword --scm-host localhost scm scm password
-    #yum install -y cloudera-manager-daemons cloudera-manager-server cloudera-manager-agent
+    CMVERSION=$(echo $target | sed -e 's/^[^=]*=//g')
     shift
     ;;
   --lic)
-    managerSettings
+    MANAGERSETTINGS=${MANAGERSETTINGS:-true}
     shift
     ;;
   --bin)
-    useBinInstaller
+    USEBIN=${USEBIN:-true}
+    #echo "useBinInstaller"
+    shift 
+    ;;
+  --db*)
+    SERVER_DB=$(echo $target | sed -e 's/^[^=]*=//g')
+    shift
+    ;;
+  --jdk*)
+    JDK_VER=$(echo $target | sed -e 's/^[^=]*=//g')
     shift
     ;;
   *)
@@ -142,6 +127,36 @@ for target in "$@"; do
     exit 1
   esac
 done
-startServices
 
-exit 0
+echo "============================================="
+echo CMVERSION: $CMVERSION
+echo MANAGERSETTINGS: $MANAGERSETTINGS
+echo USEBIN: $USEBIN
+echo SERVER_DB: $SERVER_DB
+echo JDK_VER: $JDK_VER
+echo "============================================="
+
+if [[ -z $USEBIN ]]; then
+  echo $0: using RPM Installer
+  echo Installing JDK $JDK_VER
+  installJava $JDK_VER
+  echo Set cloudera-manager.repo to CM v$CMVERSION
+  echo useRpm $CMVERSION
+  echo yum install -y cloudera-manager-daemons cloudera-manager-server cloudera-manager-agent
+  if [[ $SERVER_DB = "p" ]]; then
+    echo Initialize MySQL
+    sh /root/CDH/mysql-init.sh
+    /usr/share/cmf/schema/scm_prepare_database.sh mysql scm scm password
+  else 
+    yum install -y cloudera-manager-server-db
+  fi
+  exit 0
+else
+  echo $0: using Binary Installer
+  echo "* Downloading the latest Cloudera Manager installer ..."
+  wget -q "http://archive.cloudera.com/cm4/installer/latest/cloudera-manager-installer.bin" -O /root/CDH/cloudera-manager-installer.bin && chmod +x /root/CDH/cloudera-manager-installer.bin
+
+  ./cloudera-manager-installer.bin --i-agree-to-all-licenses --noprompt --noreadme --nooptions
+  #./cloudera-manager-installer.bin --use_embedded_db=0 --db_pw=cloudera_scm --no-prompt --i-agree-to-all-licenses --noreadme
+  exit 0
+fi
