@@ -11,14 +11,14 @@ cat << EOF
     Available versions   :   ${VERTMP}
 
   Optional if none-selected this will be Embedded PSQL
-    --db=e               :   Install/Upgrade cloudera-manager-server-db                             
+    --db=p               :   Install/Upgrade cloudera-manager-server-db                             
     --db=m               :   Prepare MySQL Database
 
   JDK (default JDK6)
     --jdk=[6 or 7]     :   Install with JDK 6 or JDK 7
   
-  Example:
-    $0 --ver=${VERLATEST} --db=e --jdk=6
+  Default:
+  $0 --ver=${VERLATEST} --db=p --jdk=6
 EOF
 }
 
@@ -63,7 +63,7 @@ EOF
 }
 
 startServices() {
- if [[ $SERVER_DB = "e" ]]; then 
+ if [[ $SERVER_DB = "p" ]]; then 
   service cloudera-scm-server-db start
  fi
  for SERVICE_NAME in cloudera-scm-server $START_SCM_AGENT; do
@@ -142,7 +142,7 @@ if [[ -z $USEBIN ]]; then
   echo Set cloudera-manager.repo to CM v$CMVERSION
   useRpm $CMVERSION
   yum install -y cloudera-manager-daemons cloudera-manager-server cloudera-manager-agent
-  if [[ $SERVER_DB = "p" ]]; then
+  if [[ $SERVER_DB = "m" ]]; then
     echo Initialize MySQL
     sh /root/CDH/mysql-init.sh
     /usr/share/cmf/schema/scm_prepare_database.sh mysql scm scm password
