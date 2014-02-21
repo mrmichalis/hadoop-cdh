@@ -23,8 +23,7 @@ EOF
 }
 
 function installJava {
-  echo $1
-  if [ $1 -ne "7" ]; then
+/  if [ $1 -ne "7" ]; then
     echo "* Oracle JDK 6u31 from CM..."
     command -v java >/dev/null 2>&1 || wget http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/4/RPMS/x86_64/jdk-6u31-linux-amd64.rpm -O /root/CDH/jdk-6u31-linux-amd64.rpm
     command -v java >/dev/null 2>&1 || rpm -ivh /root/CDH/jdk-6u31-linux-amd64.rpm
@@ -135,7 +134,7 @@ echo USEBIN: $USEBIN
 echo SERVER_DB: $SERVER_DB
 echo JDK_VER: $JDK_VER
 echo "============================================="
-
+stopServices
 if [[ -z $USEBIN ]]; then
   echo $0: using RPM Installer
   echo Installing JDK $JDK_VER
@@ -150,6 +149,7 @@ if [[ -z $USEBIN ]]; then
   else 
     yum install -y cloudera-manager-server-db
   fi
+  startServices
   exit 0
 else
   echo $0: using Binary Installer
@@ -158,5 +158,6 @@ else
 
   ./cloudera-manager-installer.bin --i-agree-to-all-licenses --noprompt --noreadme --nooptions
   #./cloudera-manager-installer.bin --use_embedded_db=0 --db_pw=cloudera_scm --no-prompt --i-agree-to-all-licenses --noreadme
+  startServices
   exit 0
 fi
