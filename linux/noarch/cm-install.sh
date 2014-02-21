@@ -23,7 +23,7 @@ EOF
 }
 
 function installJava {
-/  if [ $1 -ne "7" ]; then
+  if [ $1 -ne "7" ]; then
     echo "* Oracle JDK 6u31 from CM..."
     command -v java >/dev/null 2>&1 || wget http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/4/RPMS/x86_64/jdk-6u31-linux-amd64.rpm -O /root/CDH/jdk-6u31-linux-amd64.rpm
     command -v java >/dev/null 2>&1 || rpm -ivh /root/CDH/jdk-6u31-linux-amd64.rpm
