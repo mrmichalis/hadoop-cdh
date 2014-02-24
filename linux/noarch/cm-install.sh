@@ -69,6 +69,10 @@ startServices() {
  for SERVICE_NAME in cloudera-scm-server $START_SCM_AGENT; do
   service $SERVICE_NAME start
  done
+ echo Useful commands
+ echo tail -f /var/log/cloudera-scm-server/cloudera-scm-server.log
+ echo service cloudera-scm-server-db status
+ echo service cloudera-scm-server status
 }
 
 stopServices() {

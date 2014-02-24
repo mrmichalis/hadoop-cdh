@@ -66,6 +66,9 @@ wget --no-check-certificate 'https://raw.github.com/mitchellh/vagrant/master/key
 chmod 600 /root/.ssh/authorized_keys /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
 chown -R root /root/.ssh
 
+# http://fredkschott.com/post/2014/02/git-log-is-so-2005/
+git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%C(bold blue)<%an>%Creset' --abbrev-commit"
+
 # Zero out the free space to save space in the final image:
 #echo "* Zeroing out unused space ..."
 #dd if=/dev/zero of=/EMPTY bs=1M
