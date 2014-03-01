@@ -38,12 +38,12 @@ echo "192.168.88.250 beta.cloudera.com" >> /etc/hosts
 mkdir -p /root/CDH
 #end -init
 
-wget -q "https://github.com/mrmichalis/hadoop-cdh/raw/master/linux/noarch/.screenrc" -O /root/.screenrc 
-wget -q "https://github.com/mrmichalis/hadoop-cdh/raw/master/linux/noarch/post-download.lst" -O /root/CDH/post-download.lst 
+wget --no-check-certificate "https://github.com/mrmichalis/hadoop-cdh/raw/master/linux/noarch/.screenrc" -O /root/.screenrc 
+wget --no-check-certificate "https://github.com/mrmichalis/hadoop-cdh/raw/master/linux/noarch/post-download.lst" -O /root/CDH/post-download.lst 
 
 POST_OPTIONS=$(cat /root/CDH/post-download.lst)
 for OPT in ${POST_OPTIONS[@]}; do
-  wget -q "https://github.com/mrmichalis/hadoop-cdh/raw/master/linux/noarch/${OPT}" -O /root/CDH/${OPT} && chmod +x /root/CDH/${OPT}  
+  wget --no-check-certificate "https://github.com/mrmichalis/hadoop-cdh/raw/master/linux/noarch/${OPT}" -O /root/CDH/${OPT} && chmod +x /root/CDH/${OPT}  
 done;
 
 # Make sure udev doesn't block our network
