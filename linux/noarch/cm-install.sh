@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 usage() {
-  VERTMP=$(wget -qO - http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/ | awk 'BEGIN{ RS="<a *href *= *\""} NR>2 {sub(/".*/,"|");print;}' | grep "^4" | tr "/" " " | tr "\n" " ")
-  VERLATEST=$(wget -qO - http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/ | awk 'BEGIN{ RS="<a *href *= *\""} NR>2 {sub(/".*/,"");print;}' | grep "^4" | tail -2 | head -1 | tr "/" " " )
+  VERTMP=$(wget -qO - http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/ | awk 'BEGIN{ RS="<a *href *= *\""} NR>2 {sub(/".*/,"|");print;}' | grep "^4" | tr "/" " " | tr "\n" " " | sed -e 's/^ *//' -e 's/ *$//')
+  VERLATEST=$(wget -qO - http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/ | awk 'BEGIN{ RS="<a *href *= *\""} NR>2 {sub(/".*/,"");print;}' | grep "^4" | tail -2 | head -1 | tr "/" " " | sed -e 's/^ *//' -e 's/ *$//')
 cat << EOF
   usage: $0 --bin or --ver=4.8.0 [--psql OR --mysql] --jdk=[6 or 7]
   Options
@@ -18,7 +18,7 @@ cat << EOF
     --jdk=[6 or 7]     :   Install with JDK 6 or JDK 7
   
   Default:
-  $0 --ver=${VERLATEST} --db=p --jdk=6
+  $0 --ver=${VERLATEST//[[:blank:]]/} --db=p --jdk=6
 EOF
 }
 
@@ -99,7 +99,7 @@ fi
 START_SCM_AGENT=
 SERVER_DB=${SERVER_DB:-e}
 JDK_VER=${JDK_VER:-6}
-CMVERSION=${VERLATEST}
+CMVERSION=${VERLATEST//[[:blank:]]/}
 
 for target in "$@"; do
   case "$target" in
@@ -158,7 +158,7 @@ if [[ -z $USEBIN ]]; then
 else
   echo $0: using Binary Installer
   echo "* Downloading the latest Cloudera Manager installer ..."
-  wget -q "http://archive.cloudera.com/cm4/installer/latest/cloudera-manager-installer.bin" -O /root/CDH/cloudera-manager-installer.bin && chmod +x /root/CDH/cloudera-manager-installer.bin
+  wget -q "http://archive.cloudera.com/cm4/installer/${CMVERSION//[[:blank:]]/}/cloudera-manager-installer.bin" -O /root/CDH/cloudera-manager-installer.bin && chmod +x /root/CDH/cloudera-manager-installer.bin
 
   ./cloudera-manager-installer.bin --i-agree-to-all-licenses --noprompt --noreadme --nooptions
   #./cloudera-manager-installer.bin --use_embedded_db=0 --db_pw=cloudera_scm --no-prompt --i-agree-to-all-licenses --noreadme
