@@ -1,13 +1,11 @@
 #!/usr/bin/env bash
 
 usage() {
-  VERTMP=$(wget -qO - http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/ | awk 'BEGIN{ RS="<a *href *= *\""} NR>2 {sub(/".*/,"|");print;}' | grep "^4" | tr "/" " " | tr "\n" " " | sed -e 's/^ *//' -e 's/ *$//')
-  VERLATEST=$(wget -qO - http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/ | awk 'BEGIN{ RS="<a *href *= *\""} NR>2 {sub(/".*/,"");print;}' | grep "^4" | tail -2 | head -1 | tr "/" " " | sed -e 's/^ *//' -e 's/ *$//')
 cat << EOF
-  usage: $0 --bin or --ver=4.8.0 [--psql OR --mysql] --jdk=[6 or 7]
+  usage: $0 --bin or --ver=${VERLATEST//[[:blank:]]/} [--db=p OR --db=m] --jdk=[6 OR 7]
   Options
     --bin                :   Use latest installer
-    --ver [4.7.2]        :   Install/Upgrade version
+    --ver [${VERLATEST//[[:blank:]]/}]        :   Install/Upgrade version
     Available versions   :   ${VERTMP}
 
   Optional if none-selected this will be Embedded PSQL
@@ -15,7 +13,7 @@ cat << EOF
     --db=m               :   Prepare MySQL Database
 
   JDK (default JDK6)
-    --jdk=[6 or 7]     :   Install with JDK 6 or JDK 7
+    --jdk=[6 OR 7]     :   Install with JDK 6 or JDK 7
   
   Default:
   $0 --ver=${VERLATEST//[[:blank:]]/} --db=p --jdk=6
@@ -91,15 +89,21 @@ function managerSettings {
    service cloudera-scm-server restart
  fi
 }
+
+#set -x
+VERTMP=$(wget -qO - http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/ | awk 'BEGIN{ RS="<a *href *= *\""} NR>2 {sub(/".*/,"|");print;}' | grep "^4" | tr "/" " " | tr "\n" " " | sed -e 's/^ *//' -e 's/ *$//')
+VERLATEST=$(wget -qO - http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/ | awk 'BEGIN{ RS="<a *href *= *\""} NR>2 {sub(/".*/,"");print;}' | grep "^4" | tail -2 | head -1 | tr "/" " " | sed -e 's/^ *//' -e 's/ *$//')
+
+START_SCM_AGENT=
+SERVER_DB=${SERVER_DB:-p}
+JDK_VER=${JDK_VER:-6}
+CMVERSION=${VERLATEST//[[:blank:]]/}
+USEBIN=${USEBIN:-false}
+
 if [ $# -lt 1 ]; then
   usage
   exit 1
 fi
-#set -x
-START_SCM_AGENT=
-SERVER_DB=${SERVER_DB:-e}
-JDK_VER=${JDK_VER:-6}
-CMVERSION=${VERLATEST//[[:blank:]]/}
 
 for target in "$@"; do
   case "$target" in
@@ -124,6 +128,10 @@ for target in "$@"; do
     JDK_VER=$(echo $target | sed -e 's/^[^=]*=//g')
     shift
     ;;
+  --default)
+    INSTALL_DEFAULT=${INSTALL_DEFAULT:-true}
+    shift
+    ;;    
   *)
     echo $target
     usage
@@ -139,7 +147,7 @@ echo SERVER_DB: $SERVER_DB
 echo JDK_VER: $JDK_VER
 echo "============================================="
 stopServices
-if [[ -z $USEBIN ]]; then
+if [[ $USEBIN == "false" ]]; then
   echo $0: using RPM Installer
   echo Installing JDK $JDK_VER
   installJava $JDK_VER

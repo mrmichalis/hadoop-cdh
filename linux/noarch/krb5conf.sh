@@ -108,6 +108,9 @@ function kerberos_cmapi() {
     }, {
       "name" : "dfs_datanode_port",
       "value" : "1004"
+    }, {
+      "name" : "dfs_datanode_data_dir_perm",
+      "value" : "700"
     } ]
   }' http://$(hostname -f):7180/api/v4/clusters/Cluster%201%20-%20CDH4/services/hdfs1/roleConfigGroups/hdfs1-DATANODE-BASE/config
 
