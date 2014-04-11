@@ -33,9 +33,9 @@ function installJava {
   else
     if !(command -v java >/dev/null 2>&1); then
       echo "* Oracle JDK 7u25 from CM..."
-      wget http://archive.cloudera.com/cm5/redhat/6/x86_64/cm/5/RPMS/x86_64/oracle-j2sdk1.7-1.7.0+update25-1.x86_64.rpm -O /root/CDH/oracle-j2sdk1.7-1.7.0+update25-1.x86_64.rpm
-      command -v java >/dev/null 2>&1 || rpm -ivh /root/CDH/oracle-j2sdk1.7-1.7.0+update25-1.x86_64.rpm
-      ln -s /usr/java/jdk1.7.0_25-cloudera/ /usr/java/latest
+      wget http://archive.cloudera.com/cm5/redhat/6/x86_64/cm/5/RPMS/x86_64/oracle-j2sdk1.7-1.7.0+update45-1.x86_64.rpm -O /root/CDH/oracle-j2sdk1.7-1.7.0+update45-1.x86_64.rpm
+      command -v java >/dev/null 2>&1 || rpm -ivh /root/CDH/oracle-j2sdk1.7-1.7.0+update45-1.x86_64.rpm
+      ln -s /usr/java/jdk1.7.0_45-cloudera/ /usr/java/latest
       ln -s /usr/java/latest /usr/java/default
       update-alternatives --install /usr/bin/java java /usr/java/default/bin/java 10
       echo "* Downloading Java Cryptography Extension (JCE 7) ..."
@@ -48,15 +48,15 @@ function installJava {
   echo 'export PATH=$JAVA_HOME/bin:$PATH' >> /etc/profile.d/jdk.sh
 }
 
-function useRpm {
-  yum clean all
-  rpm --import http://archive.cloudera.com/cdh4/redhat/6/x86_64/cdh/RPM-GPG-KEY-cloudera
+function setRepo { 
+  yum clean all 
+  rpm --import http://archive.cloudera.com/cdh${REPOVER}/redhat/6/x86_64/cdh/RPM-GPG-KEY-cloudera
   cat << EOF > /etc/yum.repos.d/cloudera-manager.repo
 [cloudera-manager]
-# Packages for Cloudera Manager, Version 4, on RedHat or CentOS 6 x86_64
+# Packages for Cloudera Manager, Version ${REPOVER}, on RedHat or CentOS 6 x86_64
 name=Cloudera Manager
-baseurl=http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/$1/
-gpgkey = http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/RPM-GPG-KEY-cloudera
+baseurl=http://archive.cloudera.com/cm${REPOVER}/redhat/6/x86_64/cm/$1/
+gpgkey = http://archive.cloudera.com/cm${REPOVER}/redhat/6/x86_64/cm/RPM-GPG-KEY-cloudera
 gpgcheck = 1
 EOF
 }
@@ -93,13 +93,17 @@ function managerSettings {
 
 #set -x
 VERTMP=$(wget -qO - http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/ | awk 'BEGIN{ RS="<a *href *= *\""} NR>2 {sub(/".*/,"|");print;}' | grep "^4" | tr "/" " " | tr "\n" " " | sed -e 's/^ *//' -e 's/ *$//')
-VERLATEST=$(wget -qO - http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/ | awk 'BEGIN{ RS="<a *href *= *\""} NR>2 {sub(/".*/,"");print;}' | grep "^4" | tail -2 | head -1 | tr "/" " " | sed -e 's/^ *//' -e 's/ *$//')
+CM4VER=$(wget -qO - http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/ | awk 'BEGIN{ RS="<a *href *= *\""} NR>2 {sub(/".*/,"");print;}' | grep "^4" | tail -2 | head -1 | tr "/" " " | sed -e 's/^ *//' -e 's/ *$//')
+CM5VER=$(wget -qO - http://archive.cloudera.com/cm5/redhat/6/x86_64/cm/ | awk 'BEGIN{ RS="<a *href *= *\""} NR>2 {sub(/".*/,"");print;}' | grep "^5" | tail -1 | tr "/" " " | sed -e 's/^ *//' -e 's/ *$//')
+VERLATEST="$CM5VER"
+VERTMP="$VERTMP $CM5VER"
 
 START_SCM_AGENT=
 SERVER_DB=${SERVER_DB:-p}
 JDK_VER=${JDK_VER:-6}
 CMVERSION=${VERLATEST//[[:blank:]]/}
 USEBIN=${USEBIN:-false}
+REPOVER=${REPOVER:-5}
 
 if [ $# -lt 1 ]; then
   usage
@@ -147,27 +151,30 @@ echo USEBIN: $USEBIN
 echo SERVER_DB: $SERVER_DB
 echo JDK_VER: $JDK_VER
 echo "============================================="
+if [[ $CMVERSION == *4* ]]; then
+  REPOVER="4";
+fi
 stopServices
 if [[ $USEBIN == "false" ]]; then
   echo $0: using RPM Installer
   echo Installing JDK $JDK_VER
   installJava $JDK_VER
   echo Set cloudera-manager.repo to CM v$CMVERSION
-  useRpm $CMVERSION
+  setRepo $CMVERSION
   yum install -y cloudera-manager-daemons cloudera-manager-server cloudera-manager-agent
   if [[ $SERVER_DB = "m" ]]; then
     echo Initialize MySQL
     sh /root/CDH/mysql-init.sh
-    /usr/share/cmf/schema/scm_prepare_database.sh mysql scm scm password
+    echo /usr/share/cmf/schema/scm_prepare_database.sh mysql scm scm password
   else 
-    yum install -y cloudera-manager-server-db
+    yum install -y cloudera-manager-server-db*
   fi
   startServices
   exit 0
 else
   echo $0: using Binary Installer
   echo "* Downloading the latest Cloudera Manager installer ..."
-  wget -q "http://archive.cloudera.com/cm4/installer/${CMVERSION//[[:blank:]]/}/cloudera-manager-installer.bin" -O /root/CDH/cloudera-manager-installer.bin && chmod +x /root/CDH/cloudera-manager-installer.bin
+  wget -q "http://archive.cloudera.com/cm${REPOVER}/installer/${CMVERSION//[[:blank:]]/}/cloudera-manager-installer.bin" -O /root/CDH/cloudera-manager-installer.bin && chmod +x /root/CDH/cloudera-manager-installer.bin
 
   ./cloudera-manager-installer.bin --i-agree-to-all-licenses --noprompt --noreadme --nooptions
   #./cloudera-manager-installer.bin --use_embedded_db=0 --db_pw=cloudera_scm --no-prompt --i-agree-to-all-licenses --noreadme
