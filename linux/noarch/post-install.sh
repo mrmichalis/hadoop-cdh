@@ -5,6 +5,7 @@ set -x
 sed -i 's/alias/#alias/g' /root/.bashrc
 #echo "set -o vi"    >> /root/.bashrc
 echo "alias vi=vim" >> /root/.bashrc
+sed -i 's/ls -l/ls -ltr/g' /etc/profile.d/colorls.*
 
 cat << EOF >> /root/.bashrc
 # Auto-screen invocation. see: http://taint.org/wk/RemoteLoginAutoScreen
