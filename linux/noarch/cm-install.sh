@@ -13,10 +13,11 @@ cat << EOF
     --db=m               :   Prepare MySQL Database
 
   JDK (default JDK6)
-    --jdk=[6 OR 7]     :   Install with JDK 6 or JDK 7
+    --jdk=[6 OR 7]       :   Install with JDK 6 or JDK 7
   
-  Default:
-  $0 --ver=${VERLATEST//[[:blank:]]/} --db=p --jdk=6
+  Default
+    --default            : Install similar to below parameters
+                         : $0 --ver=${VERLATEST//[[:blank:]]/} --db=p --jdk=6
 EOF
 }
 

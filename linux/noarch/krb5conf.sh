@@ -24,6 +24,44 @@ yum install krb5-server krb5-workstation krb5-libs -y
 REALM=${1^^}
 FQDN=$(hostname -f)
 PASSWRD=Had00p
+
+function kerberos_cmapi() { 
+  
+  curl -X PUT -H 'Content-Type:application/json' -u admin:admin -d \
+    "{\"items\" : [ {\"name\" : \"SECURITY_REALM\",\"value\" : \"$REALM\"} ]}" \
+    http://$(hostname -f):7180/api/v4/cm/config
+  
+  curl -X PUT -H 'Content-Type:application/json' -u admin:admin -d '{
+    "items" : [ {
+      "name" : "hadoop_security_authentication",
+      "value" : "kerberos"
+    }, {
+      "name" : "hadoop_security_authorization",
+      "value" : "true"
+    } ]
+  }' http://$(hostname -f):7180/api/v4/clusters/Cluster%201%20-%20CDH4/services/hdfs1/config
+
+  curl -X PUT -H 'Content-Type:application/json' -u admin:admin -d '{
+    "items" : [ {
+      "name" : "dfs_datanode_http_port",
+      "value" : "1006"
+    }, {
+      "name" : "dfs_datanode_port",
+      "value" : "1004"
+    }, {
+      "name" : "dfs_datanode_data_dir_perm",
+      "value" : "700"
+    } ]
+  }' http://$(hostname -f):7180/api/v4/clusters/Cluster%201%20-%20CDH4/services/hdfs1/roleConfigGroups/hdfs1-DATANODE-BASE/config
+
+  curl -X PUT -H 'Content-Type:application/json' -u admin:admin -d '{
+    "items" : [ {
+      "name" : "enableSecurity",
+      "value" : "true"
+    } ]
+  }' http://$(hostname -f):7180/api/v4/clusters/Cluster%201%20-%20CDH4/services/zookeeper1/config
+}
+
 (
 TIMESTAMP=$(date "+%Y%m%d_%H%M%S")
 cp /etc/krb5.conf /etc/krb5.conf.backup.$TIMESTAMP
@@ -66,6 +104,10 @@ chown cloudera-scm:cloudera-scm /etc/cloudera-scm-server/cmf.keytab /etc/clouder
 chmod 0600 /etc/cloudera-scm-server/cmf.keytab /etc/cloudera-scm-server/cmf.principal
 )
 
+if promptyn "Setup Kerberos in CM via API?"; then
+  kerberos_cmapi
+fi
+
 dd if=/dev/urandom of=/etc/hadoop/hadoop-http-auth-signature-secret bs=1024 count=1
 echo "Additional Kerberos post-conf"
 cat <<EOF
@@ -79,45 +121,3 @@ EOF
 # userdel -f -r mko 
 # usermod -a -G root mko
 
-if promptyn "Setup Kerberos in CM via API?"; then
-  kerberos_cmapi
-fi
-
-function kerberos_cmapi() { 
-  curl -X PUT -H 'Content-Type:application/json' -u admin:admin -d '{
-    "items" : [ {
-        "name" : "SECURITY_REALM",
-        "value" : "$REALM"
-    } ]
-  }' http://$(hostname -f):7180/api/v4/cm/config
-
-  curl -X PUT -H 'Content-Type:application/json' -u admin:admin -d '{
-    "items" : [ {
-      "name" : "hadoop_security_authentication",
-      "value" : "kerberos"
-    }, {
-      "name" : "hadoop_security_authorization",
-      "value" : "true"
-    } ]
-  }' http://$(hostname -f):7180/api/v4/clusters/Cluster%201%20-%20CDH4/services/hdfs1/config
-
-  curl -X PUT -H 'Content-Type:application/json' -u admin:admin -d '{
-    "items" : [ {
-      "name" : "dfs_datanode_http_port",
-      "value" : "1006"
-    }, {
-      "name" : "dfs_datanode_port",
-      "value" : "1004"
-    }, {
-      "name" : "dfs_datanode_data_dir_perm",
-      "value" : "700"
-    } ]
-  }' http://$(hostname -f):7180/api/v4/clusters/Cluster%201%20-%20CDH4/services/hdfs1/roleConfigGroups/hdfs1-DATANODE-BASE/config
-
-  curl -X PUT -H 'Content-Type:application/json' -u admin:admin -d '{
-    "items" : [ {
-      "name" : "enableSecurity",
-      "value" : "true"
-    } ]
-  }' http://$(hostname -f):7180/api/v4/clusters/Cluster%201%20-%20CDH4/services/zookeeper1/config
-}

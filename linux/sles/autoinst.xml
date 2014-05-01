@@ -66,8 +66,8 @@
     <organisation></organisation>
     <organisationUnit></organisationUnit>
     <password>ENTER PASSWORD HERE</password>
-    <server_commonName>SLES11-1.lunix.co</server_commonName>
-    <server_email>postmaster@lunix.co</server_email>
+    <server_commonName>SLES11-1.lunix.lan</server_commonName>
+    <server_email>postmaster@lunix.lan</server_email>
     <state></state>
     <takeLocalServerName config:type="boolean">false</takeLocalServerName>
   </ca_mgm>
@@ -583,11 +583,11 @@
     </dhcp_options>
     <dns>
       <dhcp_hostname config:type="boolean">true</dhcp_hostname>
-      <domain>lunix.co</domain>
+      <domain>lunix.lan</domain>
       <hostname>SLES11-1</hostname>
       <resolv_conf_policy>auto</resolv_conf_policy>
       <searchlist config:type="list">
-        <search>lunix.co</search>
+        <search>lunix.lan</search>
       </searchlist>
       <write_hostname config:type="boolean">false</write_hostname>
     </dns>
@@ -1652,7 +1652,7 @@ IPADDR=$(ip -f inet addr show dev eth0|awk '$1~/inet/{print $2}'|cut -d/ -f1)
 NETMASK=$(ifconfig eth0|awk -F"Mask:" '$1~/inet /{print $2}')
 HWADDR="$(ifconfig eth0 | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}')"
 HOSTNAME="$(echo $IPADDR | tr '.' '-')"
-DN="lunix.co"
+DN="lunix.lan"
 FQDN="$HOSTNAME.$DN"
 GATEWAY=$(route | grep default | cut -b 17-32 | cut -d " " -f 1)
 
@@ -1700,6 +1700,7 @@ EOF
 
 cat << EOF > /etc/resolv.conf
 search $DN
+nameserver 192.168.88.237
 nameserver 8.8.8.8
 nameserver 8.8.4.4
 EOF
