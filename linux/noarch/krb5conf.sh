@@ -2,10 +2,10 @@
 #http://www.cloudera.com/content/cloudera-content/cloudera-docs/CDH4/latest/CDH4-Security-Guide/cdh4sg_topic_3.html
 #http://www.cloudera.com/content/cloudera-content/cloudera-docs/CM4Ent/latest/Cloudera-Manager-Managing-Clusters/cmmc_hadoop_security.html
 
-if [ $# -lt 1 ]; then
-    echo "usage: $0 [REALM i.e. LUNIX.LAN]" 1>&2
-    exit 1
-fi
+# if [ $# -lt 1 ]; then
+    # echo "usage: $0 [REALM i.e. LUNIX.LAN]" 1>&2
+    # exit 1
+# fi
 # http://stackoverflow.com/a/12202793
 function promptyn () {
   while true; do
@@ -21,7 +21,8 @@ function promptyn () {
 #pre-req
 yum install krb5-server krb5-workstation krb5-libs -y
 
-REALM=${1^^}
+#REALM=${1^^}
+REALM=LUNIX.LAN
 FQDN=$(hostname -f)
 PASSWRD=Had00p
 
@@ -60,6 +61,25 @@ function kerberos_cmapi() {
       "value" : "true"
     } ]
   }' http://$(hostname -f):7180/api/v4/clusters/Cluster%201%20-%20CDH4/services/zookeeper1/config
+
+# TODO: ADD KT-RENEWER ROLE
+#
+#  curl -X POST -H "Content-Type:application/json" -u admin:admin -d '{
+#    "items": [ {
+#      "name" : "hue1-KT_RENEWER-83bc2019b9df5bc9c9929723e02c3486",
+#      "type" : "KT_RENEWER",
+#      "hostRef" : {
+#        "hostId" : "192-168-88-216.lunix.lan"
+#      },
+#      "config" : {
+#        "items" : [ ]
+#      },
+#      "roleConfigGroupRef" : {
+#        "roleConfigGroupName" : "hue1-KT_RENEWER-BASE"
+#      }
+#    } ] 
+#  }' http://$(hostname -f):7180/api/v4/clusters/Cluster%201%20-%20CDH4/services/hue1/roles
+
 }
 
 (
