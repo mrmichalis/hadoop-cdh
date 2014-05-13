@@ -27,7 +27,14 @@ FQDN=$(hostname -f)
 PASSWRD=Had00p
 
 function kerberos_cmapi() { 
-  
+  CLUSTER_NAME=$(curl -u admin:admin http://$(hostname -f):7180/api/v4/clusters/ -s | grep name | cut -d ':' -f 2 | sed 's/.*"\(.*\)"[^"]*$/\1/' | sed 's/ /%20/g')
+  HDFS_NAME=$(curl -u admin:admin http://$(hostname -f):7180/api/v4/clusters/${CLUSTER_NAME}/services -s | grep name | grep hdfs | cut -d ':' -f 2 | sed 's/.*"\(.*\)"[^"]*$/\1/')
+  ZOOKEEPER_NAME=$(curl -u admin:admin http://$(hostname -f):7180/api/v4/clusters/${CLUSTER_NAME}/services -s | grep name | grep zookeeper | cut -d ':' -f 2 | sed 's/.*"\(.*\)"[^"]*$/\1/')
+  HUE_NAME=$(curl -u admin:admin http://$(hostname -f):7180/api/v4/clusters/${CLUSTER_NAME}/services -s | grep name | grep hue | cut -d ':' -f 2 | sed 's/.*"\(.*\)"[^"]*$/\1/')
+  HUE_SERVER_NAME=$(curl -u admin:admin http://$(hostname -f):7180/api/v4/clusters/${CLUSTER_NAME}/services/${HUE_NAME}/roles -s | grep name | grep HUE_SERVER | head -1 | cut -d ':' -f 2 | sed 's/.*"\(.*\)"[^"]*$/\1/')
+  HUE_HOSTID=$(curl -u admin:admin http://$(hostname -f):7180/api/v4/clusters/${CLUSTER_NAME}/services/${HUE_NAME}/roles -s | grep hostId | head -1 | cut -d ':' -f 2 | sed 's/.*"\(.*\)"[^"]*$/\1/')
+  KT_RENEWER_NAME=$(curl -u admin:admin http://$(hostname -f):7180/api/v4/clusters/${CLUSTER_NAME}/services/${HUE_NAME}/roles -s | grep name | grep HUE_SERVER | head -1 | cut -d ':' -f 2 | sed 's/.*"\(.*\)"[^"]*$/\1/' | sed 's/HUE_SERVER/KT_RENEWER/g')
+
   curl -X PUT -H 'Content-Type:application/json' -u admin:admin -d \
     "{\"items\" : [ {\"name\" : \"SECURITY_REALM\",\"value\" : \"$REALM\"} ]}" \
     http://$(hostname -f):7180/api/v4/cm/config
@@ -40,7 +47,7 @@ function kerberos_cmapi() {
       "name" : "hadoop_security_authorization",
       "value" : "true"
     } ]
-  }' http://$(hostname -f):7180/api/v4/clusters/Cluster%201%20-%20CDH4/services/hdfs1/config
+  }' http://$(hostname -f):7180/api/v4/clusters/${CLUSTER_NAME}/services/${HDFS_NAME}/config
 
   curl -X PUT -H 'Content-Type:application/json' -u admin:admin -d '{
     "items" : [ {
@@ -53,33 +60,30 @@ function kerberos_cmapi() {
       "name" : "dfs_datanode_data_dir_perm",
       "value" : "700"
     } ]
-  }' http://$(hostname -f):7180/api/v4/clusters/Cluster%201%20-%20CDH4/services/hdfs1/roleConfigGroups/hdfs1-DATANODE-BASE/config
+  }' http://$(hostname -f):7180/api/v4/clusters/${CLUSTER_NAME}/services/${HDFS_NAME}/roleConfigGroups/${HDFS_NAME}-DATANODE-BASE/config
 
   curl -X PUT -H 'Content-Type:application/json' -u admin:admin -d '{
     "items" : [ {
       "name" : "enableSecurity",
       "value" : "true"
     } ]
-  }' http://$(hostname -f):7180/api/v4/clusters/Cluster%201%20-%20CDH4/services/zookeeper1/config
+  }' http://$(hostname -f):7180/api/v4/clusters/${CLUSTER_NAME}/services/${ZOOKEEPER_NAME}/config
 
-# TODO: ADD KT-RENEWER ROLE
-#
-#  curl -X POST -H "Content-Type:application/json" -u admin:admin -d '{
-#    "items": [ {
-#      "name" : "hue1-KT_RENEWER-83bc2019b9df5bc9c9929723e02c3486",
-#      "type" : "KT_RENEWER",
-#      "hostRef" : {
-#        "hostId" : "192-168-88-216.lunix.lan"
-#      },
-#      "config" : {
-#        "items" : [ ]
-#      },
-#      "roleConfigGroupRef" : {
-#        "roleConfigGroupName" : "hue1-KT_RENEWER-BASE"
-#      }
-#    } ] 
-#  }' http://$(hostname -f):7180/api/v4/clusters/Cluster%201%20-%20CDH4/services/hue1/roles
-
+ curl -X POST -H "Content-Type:application/json" -u admin:admin -d "{
+   \"items\": [ {
+     \"name\" : \"$KT_RENEWER_NAME\",
+     \"type\" : \"KT_RENEWER\",
+     \"hostRef\" : {
+       \"hostId\" : \"$HUE_HOSTID\"
+     },
+     \"config\" : {
+       \"items\" : [ ]
+     },
+     \"roleConfigGroupRef\" : {
+       \"roleConfigGroupName\" : \"$HUE_NAME-KT_RENEWER-BASE\"
+     }
+   } ] 
+ }" http://$(hostname -f):7180/api/v4/clusters/${CLUSTER_NAME}/services/${HUE_NAME}/roles
 }
 
 (
@@ -122,13 +126,13 @@ echo "cloudera-scm/admin@$REALM" > /etc/cloudera-scm-server/cmf.principal
 mv cmf.keytab /etc/cloudera-scm-server/cmf.keytab
 chown cloudera-scm:cloudera-scm /etc/cloudera-scm-server/cmf.keytab /etc/cloudera-scm-server/cmf.principal
 chmod 0600 /etc/cloudera-scm-server/cmf.keytab /etc/cloudera-scm-server/cmf.principal
+dd if=/dev/urandom of=/etc/hadoop/hadoop-http-auth-signature-secret bs=1024 count=1
 )
 
 if promptyn "Setup Kerberos in CM via API?"; then
   kerberos_cmapi
 fi
 
-dd if=/dev/urandom of=/etc/hadoop/hadoop-http-auth-signature-secret bs=1024 count=1
 echo "Additional Kerberos post-conf"
 cat <<EOF
 groupadd supergroup -g 10001
