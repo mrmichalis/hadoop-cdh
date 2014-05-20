@@ -27,7 +27,7 @@ EOF
 
 echo "* Install puppet 6.10 repo"
 rpm -ivh https://yum.puppetlabs.com/el/6/products/x86_64/puppetlabs-release-6-10.noarch.rpm
-yum install -y puppet
+yum install -y puppet git
 
 #http://www.cyberciti.biz/faq/unable-to-read-consumer-identity-rhn-yum-warning/
 if grep -q -i "Red Hat" /etc/redhat-release; then
