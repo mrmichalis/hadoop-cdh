@@ -34,7 +34,9 @@ function kerberos_cmapi() {
   HUE_SERVER_NAME=$(curl -u admin:admin http://$(hostname -f):7180/api/v4/clusters/${CLUSTER_NAME}/services/${HUE_NAME}/roles -s | grep name | grep HUE_SERVER | head -1 | cut -d ':' -f 2 | sed 's/.*"\(.*\)"[^"]*$/\1/')
   HUE_HOSTID=$(curl -u admin:admin http://$(hostname -f):7180/api/v4/clusters/${CLUSTER_NAME}/services/${HUE_NAME}/roles -s | grep hostId | head -1 | cut -d ':' -f 2 | sed 's/.*"\(.*\)"[^"]*$/\1/')
   KT_RENEWER_NAME=$(curl -u admin:admin http://$(hostname -f):7180/api/v4/clusters/${CLUSTER_NAME}/services/${HUE_NAME}/roles -s | grep name | grep HUE_SERVER | head -1 | cut -d ':' -f 2 | sed 's/.*"\(.*\)"[^"]*$/\1/' | sed 's/HUE_SERVER/KT_RENEWER/g')
-
+  MAPREDUCE_NAME=$(curl -u admin:admin http://$(hostname -f):7180/api/v4/clusters/${CLUSTER_NAME}/services -s | grep name | grep mapreduce | cut -d ':' -f 2 | sed 's/.*"\(.*\)"[^"]*$/\1/')
+  MAPREDUCE_GATEWAY_NAME=$(curl -u admin:admin http://$(hostname -f):7180/api/v4/clusters/${CLUSTER_NAME}/services/${MAPREDUCE_NAME}/roles -s | grep name | grep JOBT | head -1 | cut -d ':' -f 2 | sed 's/.*"\(.*\)"[^"]*$/\1/' | sed 's/mapreduce1-JOBTRACKER/mapreduce1-GATEWAY/g')
+  
   curl -X PUT -H 'Content-Type:application/json' -u admin:admin -d \
     "{\"items\" : [ {\"name\" : \"SECURITY_REALM\",\"value\" : \"$REALM\"} ]}" \
     http://$(hostname -f):7180/api/v4/cm/config
@@ -84,6 +86,24 @@ function kerberos_cmapi() {
      }
    } ] 
  }" http://$(hostname -f):7180/api/v4/clusters/${CLUSTER_NAME}/services/${HUE_NAME}/roles
+ 
+ curl -X POST -H "Content-Type:application/json" -u admin:admin -d "{
+   \"items\": [ {
+     \"name\" : \"$MAPREDUCE_GATEWAY_NAME\",
+     \"type\" : \"GATEWAY\",
+     \"hostRef\" : {
+       \"hostId\" : \"$HUE_HOSTID\"
+     },
+     \"config\" : {
+       \"items\" : [ ]
+     },
+     \"roleConfigGroupRef\" : {
+       \"roleConfigGroupName\" : \"$MAPREDUCE_NAME-GATEWAY-BASE\"
+     }
+   } ] 
+ }" http://$(hostname -f):7180/api/v4/clusters/${CLUSTER_NAME}/services/${MAPREDUCE_NAME}/roles
+ 
+
 }
 
 (

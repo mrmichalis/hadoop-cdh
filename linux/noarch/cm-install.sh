@@ -156,6 +156,8 @@ if [[ $CMVERSION == *4* ]]; then
   REPOVER="4";
 fi
 stopServices
+easy_install pip
+pip install cm_api==5.0.0
 if [[ $USEBIN == "false" ]]; then
   echo $0: using RPM Installer
   echo Installing JDK $JDK_VER
