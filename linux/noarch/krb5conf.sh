@@ -102,7 +102,6 @@ function kerberos_cmapi() {
      }
    } ] 
  }" http://$(hostname -f):7180/api/v4/clusters/${CLUSTER_NAME}/services/${MAPREDUCE_NAME}/roles
- 
 
 }
 
