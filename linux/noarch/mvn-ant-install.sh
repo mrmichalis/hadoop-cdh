@@ -18,7 +18,9 @@ tar xzvf apache-ant-$ANT_VER-bin.tar.gz -C /usr/local/ && ln -s /usr/local/apach
 echo "* Set ANT_HOME in /etc/profile.d/ant.sh ..."
 echo 'export ANT_HOME=/usr/local/ant' > /etc/profile.d/ant.sh
 echo 'export PATH=$ANT_HOME/bin:$PATH' >> /etc/profile.d/ant.sh
+. /etc/profile.d/ant.sh
 
 echo "* Set MVN_HOME in /etc/profile.d/mvn.sh ..."
 echo 'export MVN_HOME=/usr/local/maven' > /etc/profile.d/mvn.sh
 echo 'export PATH=$MVN_HOME/bin:$PATH' >> /etc/profile.d/mvn.sh
+. /etc/profile.d/mvn.sh

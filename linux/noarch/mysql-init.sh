@@ -42,7 +42,8 @@ if [[ ! -e "/usr/share/java/mysql-connector-java.jar" ]];then
   MYSQL_VER=5.1.30
   curl -L http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-$MYSQL_VER.tar.gz | tar xzv
   [[ -d "/usr/share/java/" && ! -e "/usr/share/java/mysql-connector-java.jar" ]] && cp /root/CDH/mysql-connector-java-$MYSQL_VER/mysql-connector-java-$MYSQL_VER-bin.jar /usr/share/java/mysql-connector-java.jar
-  [[ -d "/opt/cloudera/parcels/CDH/lib/hive/lib/" && ! -e "/opt/cloudera/parcels/CDH/lib/hive/lib/mysql-connector-java.jar" ]] && ln -s /root/CDH/mysql-connector-java-$MYSQL_VER/mysql-connector-java-$MYSQL_VER-bin.jar /opt/cloudera/parcels/CDH/lib/hive/lib/mysql-connector-java.jar      
+  [[ -d "/opt/cloudera/parcels/CDH/lib/hive/lib/" && ! -e "/opt/cloudera/parcels/CDH/lib/hive/lib/mysql-connector-java.jar" ]] && ln -s /usr/share/java/mysql-connector-java.jar /opt/cloudera/parcels/CDH/lib/hive/lib/mysql-connector-java.jar      
+  [[ -d "/opt/cloudera/parcels/CDH/lib/sqoop/lib/" && ! -e "/opt/cloudera/parcels/CDH/lib/hive/lib/mysql-connector-java.jar" ]] && ln -s /usr/share/java/mysql-connector-java.jar /opt/cloudera/parcels/CDH/lib/sqoop/lib/mysql-connector-java.jar      
 fi
 # http://www.cloudera.com/content/cloudera-content/cloudera-docs/CM4Ent/latest/Cloudera-Manager-Installation-Guide/cmig_install_path_B.html
 # /usr/share/cmf/schema/scm_prepare_database.sh mysql -h localhost -u temp -ppassword --scm-host localhost scm scm password

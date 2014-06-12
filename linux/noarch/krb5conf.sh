@@ -102,6 +102,72 @@ function kerberos_cmapi() {
      }
    } ] 
  }" http://$(hostname -f):7180/api/v4/clusters/${CLUSTER_NAME}/services/${MAPREDUCE_NAME}/roles
+ 
+ # TODO
+  # {
+    # "name" : "hive1-HIVESERVER2-dae69bb962a2e73f2e045a1375521e7f",
+    # "type" : "HIVESERVER2",
+    # "hostRef" : {
+      # "hostId" : "192-168-88-209.lunix.lan"
+    # },
+    # "config" : {
+      # "items" : [ ]
+    # },
+    # "roleConfigGroupRef" : {
+      # "roleConfigGroupName" : "hive1-HIVESERVER2-BASE"
+    # }
+  # }, {
+    # "name" : "hive1-WEBHCAT-dae69bb962a2e73f2e045a1375521e7f",
+    # "type" : "WEBHCAT",
+    # "hostRef" : {
+      # "hostId" : "192-168-88-209.lunix.lan"
+    # },
+    # "config" : {
+      # "items" : [ {
+        # "name" : "hive_webhcat_secret_key",
+        # "value" : "9Wm21ORqHlnYL3ppxejfl4f6M2Qzet"
+      # } ]
+    # },
+    # "roleConfigGroupRef" : {
+      # "roleConfigGroupName" : "hive1-WEBHCAT-BASE"
+    # }
+  # } 
+  # {
+      # "displayName" : "hive1",
+      # "roleConfigGroups" : [ {
+        # "name" : "hive1-GATEWAY-BASE",
+        # "displayName" : "Gateway (Default)",
+        # "roleType" : "GATEWAY",
+        # "base" : true,
+        # "serviceRef" : {
+          # "clusterName" : "Cluster 1 - CDH4",
+          # "serviceName" : "hive1"
+        # },
+        # "config" : {
+          # "items" : [ {
+            # "name" : "hive_client_config_safety_valve",
+            # "value" : "<property>\r\n  <name>hive.server2.authentication</name>\r\n  <value>KERBEROS</value>\r\n</property>\r\n"
+          # } ]
+        # }
+      # }
+  # }
+  # {
+  # "displayName" : "hive1",
+      # "roleConfigGroups" : [ {
+        # "name" : "hive1-GATEWAY-BASE",
+        # "displayName" : "Gateway (Default)",
+        # "roleType" : "GATEWAY",
+        # "base" : true,
+        # "serviceRef" : {
+          # "clusterName" : "Cluster 1 - CDH4",
+          # "serviceName" : "hive1"
+        # },
+        # "config" : {
+          # "items" : [ {
+            # "name" : "hive_client_config_safety_valve",
+            # "value" : "<property>\r\n  <name>hive.server2.authentication</name>\r\n  <value>KERBEROS</value>\r\n</property>\r\n"
+          # } ] } }        
+  # }
 
 }
 

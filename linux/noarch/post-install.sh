@@ -31,6 +31,7 @@ echo "* Install Puppet CM API and pre-requisites"
 yum install -y puppet git python-argparse sshpass
 easy_install pip
 pip install cm_api
+pip install fabric
 
 #http://www.cyberciti.biz/faq/unable-to-read-consumer-identity-rhn-yum-warning/
 if grep -q -i "Red Hat" /etc/redhat-release; then
