@@ -221,7 +221,7 @@ fi
 echo "Additional Kerberos post-conf"
 cat <<EOF
 groupadd supergroup -g 10001
-adduser mko -G supergroup,hdfs,hadoop,root -u 10002 -d /home/mko -m
+useradd mko -G supergroup,hdfs,hadoop,root -u 10002 -d /home/mko -m
 sudo -u hdfs hadoop fs -mkdir /user/mko
 sudo -u hdfs hadoop fs -chown mko:supergroup /user/mko
 mkdir -p /home/hdfs && chown -R hdfs:hdfs /home/hdfs
