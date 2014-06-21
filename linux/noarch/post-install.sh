@@ -28,10 +28,11 @@ EOF
 echo "* Install Puppet 6.10 repo"
 rpm -ivh https://yum.puppetlabs.com/el/6/products/x86_64/puppetlabs-release-6-10.noarch.rpm
 echo "* Install Puppet CM API and pre-requisites"
-yum install -y puppet git python-argparse sshpass libffi-devel
+yum install -y puppet git pyt1hon-argparse sshpass libffi-devel
 easy_install pip
+pip install python-novaclient
 pip install cm_api
-pip install fabric && cat /dev/null > /usr/lib/python2.6/site-packages/Fabric-1.9.0-py2.6.egg-info
+pip install fabric && cat /dev/null > /usr/lib/python2.6/site-packages/Fabric-1.9.0-py2.6.egg-info/requires.txt
 
 #http://www.cyberciti.biz/faq/unable-to-read-consumer-identity-rhn-yum-warning/
 if grep -q -i "Red Hat" /etc/redhat-release; then
