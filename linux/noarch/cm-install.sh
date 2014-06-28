@@ -29,7 +29,7 @@ function installJava {
     command -v java >/dev/null 2>&1 || rpm -ivh /root/CDH/jdk-6u31-linux-amd64.rpm
 
     echo "* Downloading Java Cryptography Extension (JCE) ..."
-    // See https://github.com/flexiondotorg/oab-java6/blob/master/oab-java.sh
+    # See https://github.com/flexiondotorg/oab-java6/blob/master/oab-java.sh
     wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie;gpw_e24=http://edelivery.oracle.com" http://download.oracle.com/otn-pub/java/jce_policy/6/jce_policy-6.zip -O /root/CDH/jce_policy-6.zip
     [[ -d "/usr/java/default/jre/lib/security/" ]] && unzip -oj /root/CDH/jce_policy-6.zip -d /usr/java/default/jre/lib/security/
   else
