@@ -4,16 +4,21 @@ usage() {
 cat << EOF
   usage: $0 --bin or --ver=${VERLATEST//[[:blank:]]/} [--db=p OR --db=m] --jdk=[6 OR 7]
   Options
-    --bin                :   Use latest installer
+    --bin                           :   Use latest installer
     --ver [${VERLATEST//[[:blank:]]/}]        :   Install/Upgrade version
-    Available versions   :   ${VERTMP}
+    Available versions              :   ${VERTMP}
 
   Optional if none-selected this will be Embedded PSQL
-    --db=p               :   Install/Upgrade cloudera-manager-server-db                             
-    --db=m               :   Prepare MySQL Database
+    --db=p                          :   Install/Upgrade cloudera-manager-server-db                             
+    --db=m                          :   Prepare MySQL Database
 
   JDK (default JDK6)
-    --jdk=[6 OR 7]       :   Install with JDK 6 or JDK 7
+    --jdk=[6 OR 7]                  :   Install with JDK 6 or JDK 7
+  
+  Agents
+    --agent                         :   Install Agents only
+    --startagent                    :   Start Agents after installation
+    --cmhost=[hostname/ip]          :   Location of the CM Server Hosts
   
   Default
     --default            : Install similar to below parameters
@@ -116,6 +121,8 @@ JDK_VER=${JDK_VER:-6}
 CMVERSION=${VERLATEST//[[:blank:]]/}
 USEBIN=${USEBIN:-false}
 REPOVER=${REPOVER:-5}
+MASTER_HOST=${MASTER_HOST//[[:blank:]]/}
+TIMESTAMP=$(date "+%Y%m%d_%H%M%S")
 
 if [ $# -lt 1 ]; then
   usage
@@ -124,6 +131,18 @@ fi
 
 for target in "$@"; do
   case "$target" in
+  --startagent)
+    START_SCM_AGENT=${START_SCM_AGENT:-true}
+    shift
+    ;;
+  --agent)
+    INSTALL_AGENT_ONLY=${INSTALL_AGENTS:-true}
+    shift
+    ;;
+  --cmhost*)
+    CMHOST=$(echo $target | sed -e 's/^[^=]*=//g')
+    shift
+    ;;
   --ver*)
     CMVERSION=$(echo $target | sed -e 's/^[^=]*=//g')
     shift
@@ -162,6 +181,7 @@ echo MANAGERSETTINGS: $MANAGERSETTINGS
 echo USEBIN: $USEBIN
 echo SERVER_DB: $SERVER_DB
 echo JDK_VER: $JDK_VER
+echo CMHOST $CMHOST
 echo "============================================="
 if [[ $CMVERSION == *4* ]]; then
   REPOVER="4";
@@ -172,16 +192,29 @@ if [[ $USEBIN == "false" ]]; then
   installPdsh
   installJava $JDK_VER
   setRepo $CMVERSION
-  yum install -y cloudera-manager-daemons cloudera-manager-server cloudera-manager-agent
-  if [[ $SERVER_DB = "m" ]]; then
-    echo Initialize MySQL
-    sh /root/CDH/mysql-init.sh
-    echo /usr/share/cmf/schema/scm_prepare_database.sh mysql scm scm password
-  else 
-    yum install -y cloudera-manager-server-db*
-  fi
-  startServices
-  exit 0
+  if [[ $INSTALL_AGENT_ONLY == "true" ]]; then
+    if [ -z "$CMHOST" ]; then
+      echo "Provide CM Server hostname or IP with parameter --cmhost=[hostname/ip]"
+      exit 0
+    else
+       yum install -y cloudera-manager-daemons cloudera-manager-agent
+      cp /etc/cloudera-scm-agent/config.ini /etc/cloudera-scm-agent/config.ini.backup.$TIMESTAMP
+      sed -ie "s/server_host=localhost/server_host=${CMHOST}/g" /etc/cloudera-scm-agent/config.ini
+      service cloudera-scm-agent start
+    fi
+  else
+    echo "yum install -y cloudera-manager-daemons cloudera-manager-server cloudera-manager-agent"
+    if [[ $SERVER_DB = "m" ]]; then
+      echo Initialize MySQL
+      sh /root/CDH/mysql-init.sh
+      echo /usr/share/cmf/schema/scm_prepare_database.sh mysql scm scm password
+    else 
+      yum install -y cloudera-manager-server-db*
+    fi
+    startServices
+    exit 0
+  fi  
+
 else
   echo $0: using Binary Installer
   echo "* Downloading the latest Cloudera Manager installer ..."
