@@ -22,6 +22,7 @@ EOF
 }
 
 function installJava {
+  echo Installing JDK $1
   if [ $1 -ne "7" ]; then
     echo "* Oracle JDK 6u31 from CM..."
     command -v java >/dev/null 2>&1 || wget http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/4/RPMS/x86_64/jdk-6u31-linux-amd64.rpm -O /root/CDH/jdk-6u31-linux-amd64.rpm
@@ -48,8 +49,18 @@ function installJava {
   echo 'export JAVA_HOME=/usr/java/default' > /etc/profile.d/jdk.sh
   echo 'export PATH=$JAVA_HOME/bin:$PATH' >> /etc/profile.d/jdk.sh
 }
+function installPdsh {
+  echo "Installing Parallel Distributed Shell v2.29"
+  wget --no-check-certificate --no-cookies https://pdsh.googlecode.com/files/pdsh-2.29.tar.bz2 -O /root/CDH/pdsh-2.29.tar.bz2
+  tar xjvf /root/CDH/pdsh-2.29.tar.bz2 && cd /root/CDH/pdsh-2.29/
+  ./configure
+  make
+  make install
+  cd ..
+}
 
-function setRepo { 
+function setRepo {
+  echo "Set cloudera-manager.repo to CM v$1"
   yum clean all 
   rpm --import http://archive.cloudera.com/cdh${REPOVER}/redhat/6/x86_64/cdh/RPM-GPG-KEY-cloudera
   cat << EOF > /etc/yum.repos.d/cloudera-manager.repo
@@ -87,7 +98,7 @@ function managerSettings {
  wget "http://archive.cloudera.com/managerSettings.json" -O "$INIT_FILE"
  while ! exec 6<>/dev/tcp/$(hostname)/7180; do echo -e -n "Waiting for cloudera-scm-server to start..."; sleep 10; done
  if [ -f $INIT_FILE ]; then
-   curl --upload-file $INIT_FILE -u admin:admin http://$(hostname):7180/api/v5/cm/deployment?deleteCurrentDeployment=true
+   curl -u admin:admin http://$(hostname):7180/api/v5/cm/deployment?deleteCurrentDeployment=true --upload-file $INIT_FILE
    service cloudera-scm-server restart
  fi
 }
@@ -158,9 +169,8 @@ fi
 stopServices
 if [[ $USEBIN == "false" ]]; then
   echo $0: using RPM Installer
-  echo Installing JDK $JDK_VER
+  installPdsh
   installJava $JDK_VER
-  echo Set cloudera-manager.repo to CM v$CMVERSION
   setRepo $CMVERSION
   yum install -y cloudera-manager-daemons cloudera-manager-server cloudera-manager-agent
   if [[ $SERVER_DB = "m" ]]; then
