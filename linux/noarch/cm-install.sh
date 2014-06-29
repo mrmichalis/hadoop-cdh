@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+WGET="wget --no-check-certificate --no-cookies -nv"
 usage() {
 cat << EOF
   usage: $0 --bin or --ver=${VERLATEST//[[:blank:]]/} [--db=p OR --db=m] --jdk=[6 OR 7]
@@ -35,7 +35,7 @@ function installJava {
 
     echo "* Downloading Java Cryptography Extension (JCE) ..."
     # See https://github.com/flexiondotorg/oab-java6/blob/master/oab-java.sh
-    wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie;gpw_e24=http://edelivery.oracle.com" http://download.oracle.com/otn-pub/java/jce_policy/6/jce_policy-6.zip -O /root/CDH/jce_policy-6.zip
+    $WGET --header "Cookie: oraclelicense=accept-securebackup-cookie;gpw_e24=http://edelivery.oracle.com" http://download.oracle.com/otn-pub/java/jce_policy/6/jce_policy-6.zip -O /root/CDH/jce_policy-6.zip
     [[ -d "/usr/java/default/jre/lib/security/" ]] && unzip -oj /root/CDH/jce_policy-6.zip -d /usr/java/default/jre/lib/security/
   else
     if !(command -v java >/dev/null 2>&1); then
@@ -46,7 +46,7 @@ function installJava {
       ln -s /usr/java/latest /usr/java/default
       update-alternatives --install /usr/bin/java java /usr/java/default/bin/java 10
       echo "* Downloading Java Cryptography Extension (JCE 7) ..."
-      wget --no-check-certificate --no-cookies --header "Cookie: oraclelicensejce-7-oth-JPR=accept-securebackup-cookie;gpw_e24=http://edelivery.oracle.com" http://download.oracle.com/otn-pub/java/jce/7/UnlimitedJCEPolicyJDK7.zip -O /root/CDH/UnlimitedJCEPolicyJDK7.zip
+      $WGET --header "Cookie: oraclelicensejce-7-oth-JPR=accept-securebackup-cookie;gpw_e24=http://edelivery.oracle.com" http://download.oracle.com/otn-pub/java/jce/7/UnlimitedJCEPolicyJDK7.zip -O /root/CDH/UnlimitedJCEPolicyJDK7.zip
       [[ -d "/usr/java/default/jre/lib/security/" ]] && unzip -oj /root/CDH/UnlimitedJCEPolicyJDK7.zip -d /usr/java/default/jre/lib/security/
     fi
   fi
@@ -56,11 +56,13 @@ function installJava {
 }
 function installPdsh {
   echo "Installing Parallel Distributed Shell v2.29"
-  wget --no-check-certificate --no-cookies https://pdsh.googlecode.com/files/pdsh-2.29.tar.bz2 -O /root/CDH/pdsh-2.29.tar.bz2
+  $WGET https://pdsh.googlecode.com/files/pdsh-2.29.tar.bz2 -O /root/CDH/pdsh-2.29.tar.bz2
   tar xjvf /root/CDH/pdsh-2.29.tar.bz2 && cd /root/CDH/pdsh-2.29/
   ./configure --with-ssh
   make
   make install
+  echo 'export PDSH_SSH_ARGS_APPEND="-o ConnectTimeout=5 -o CheckHostIP=no -o StrictHostKeyChecking=no"' >> /root/.bashrc
+  export PDSH_SSH_ARGS_APPEND="-o ConnectTimeout=5 -o CheckHostIP=no -o StrictHostKeyChecking=no"
   cd ..
 }
 
@@ -85,7 +87,7 @@ startServices() {
  for SERVICE_NAME in cloudera-scm-server $START_SCM_AGENT; do
   service $SERVICE_NAME start
  done
- echo Useful commands
+ echo "Useful commands"
  echo tail -f /var/log/cloudera-scm-server/cloudera-scm-server.log
  echo service cloudera-scm-server-db status
  echo service cloudera-scm-server status
@@ -100,7 +102,7 @@ stopServices() {
 function managerSettings {
  # curl -u admin:admin http://$(hostname):7180/api/v5/cm/deployment > managerSettings.json
  INIT_FILE="/root/CDH/managerSettings.json"
- wget "http://archive.cloudera.com/managerSettings.json" -O "$INIT_FILE"
+ wget --nv "http://archive.cloudera.com/managerSettings.json" -O "$INIT_FILE"
  while ! exec 6<>/dev/tcp/$(hostname)/7180; do echo -e -n "Waiting for cloudera-scm-server to start..."; sleep 10; done
  if [ -f $INIT_FILE ]; then
    curl -u admin:admin http://$(hostname):7180/api/v5/cm/deployment?deleteCurrentDeployment=true --upload-file $INIT_FILE
@@ -218,7 +220,7 @@ if [[ $USEBIN == "false" ]]; then
 else
   echo $0: using Binary Installer
   echo "* Downloading the latest Cloudera Manager installer ..."
-  wget -q "http://archive.cloudera.com/cm${REPOVER}/installer/${CMVERSION//[[:blank:]]/}/cloudera-manager-installer.bin" -O /root/CDH/cloudera-manager-installer.bin && chmod +x /root/CDH/cloudera-manager-installer.bin
+  wget -nv "http://archive.cloudera.com/cm${REPOVER}/installer/${CMVERSION//[[:blank:]]/}/cloudera-manager-installer.bin" -O /root/CDH/cloudera-manager-installer.bin && chmod +x /root/CDH/cloudera-manager-installer.bin
 
   ./cloudera-manager-installer.bin --i-agree-to-all-licenses --noprompt --noreadme --nooptions
   #./cloudera-manager-installer.bin --use_embedded_db=0 --db_pw=cloudera_scm --no-prompt --i-agree-to-all-licenses --noreadme
