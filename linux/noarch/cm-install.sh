@@ -58,7 +58,7 @@ function installPdsh {
   echo "Installing Parallel Distributed Shell v2.29"
   wget --no-check-certificate --no-cookies https://pdsh.googlecode.com/files/pdsh-2.29.tar.bz2 -O /root/CDH/pdsh-2.29.tar.bz2
   tar xjvf /root/CDH/pdsh-2.29.tar.bz2 && cd /root/CDH/pdsh-2.29/
-  ./configure
+  ./configure --with-ssh
   make
   make install
   cd ..
