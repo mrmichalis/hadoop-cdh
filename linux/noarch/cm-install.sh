@@ -91,6 +91,7 @@ startServices() {
  echo tail -f /var/log/cloudera-scm-server/cloudera-scm-server.log
  echo service cloudera-scm-server-db status
  echo service cloudera-scm-server status
+ echo nc -z $(hostname -f) 7180
 }
 
 stopServices() {
@@ -205,7 +206,8 @@ if [[ $USEBIN == "false" ]]; then
       service cloudera-scm-agent start
     fi
   else
-    echo "yum install -y cloudera-manager-daemons cloudera-manager-server cloudera-manager-agent"
+    yum install -y cloudera-manager-daemons cloudera-manager-server cloudera-manager-agent
+    CMHOST=$(hostname -f); sed -ie "s/server_host=/server_host=${CMHOST}/g" /etc/cloudera-scm-agent/config.ini
     if [[ $SERVER_DB = "m" ]]; then
       echo Initialize MySQL
       sh /root/CDH/mysql-init.sh
