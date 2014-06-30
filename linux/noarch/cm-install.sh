@@ -207,7 +207,7 @@ if [[ $USEBIN == "false" ]]; then
     fi
   else
     yum install -y cloudera-manager-daemons cloudera-manager-server cloudera-manager-agent
-    CMHOST=$(hostname -f); sed -ie "s/server_host=/server_host=${CMHOST}/g" /etc/cloudera-scm-agent/config.ini
+    CMHOST=$(hostname -f); sed -ie "s/server_host=localhost/server_host=${CMHOST}/g" /etc/cloudera-scm-agent/config.ini
     if [[ $SERVER_DB = "m" ]]; then
       echo Initialize MySQL
       sh /root/CDH/mysql-init.sh
