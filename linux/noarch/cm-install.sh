@@ -112,11 +112,12 @@ function managerSettings {
 }
 
 #set -x
-VERTMP=$(wget -qO - http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/ | awk 'BEGIN{ RS="<a *href *= *\""} NR>2 {sub(/".*/,"|");print;}' | grep "^4" | tr "/" " " | tr "\n" " " | sed -e 's/^ *//' -e 's/ *$//')
-CM4VER=$(wget -qO - http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/ | awk 'BEGIN{ RS="<a *href *= *\""} NR>2 {sub(/".*/,"");print;}' | grep "^4" | tail -2 | head -1 | tr "/" " " | sed -e 's/^ *//' -e 's/ *$//')
-CM5VER=$(wget -qO - http://archive.cloudera.com/cm5/redhat/6/x86_64/cm/ | awk 'BEGIN{ RS="<a *href *= *\""} NR>2 {sub(/".*/,"");print;}' | grep "^5" | tail -1 | tr "/" " " | sed -e 's/^ *//' -e 's/ *$//')
+VERTMP4=$(wget -qO - http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/ | awk 'BEGIN{ RS="<a *href *= *\""} NR>2 {sub(/".*/,"|");print;}' | grep "^4" | tr "/" " " | tr "\n" " " | sed -e 's/^ *//')
+VERTMP5=$(wget -qO - http://archive.cloudera.com/cm5/redhat/6/x86_64/cm/ | awk 'BEGIN{ RS="<a *href *= *\""} NR>2 {sub(/".*/,"|");print;}' | grep "^5" | tr "/" " " | tr "\n" " " | sed -e 's/^ *//')
+CM4VER=$(wget -qO - http://archive.cloudera.com/cm4/redhat/6/x86_64/cm/ | awk 'BEGIN{ RS="<a *href *= *\""} NR>2 {sub(/".*/,"");print;}' | grep "^4" | tail -2 | head -1 | tr "/" " " | sed -e 's/^ *//')
+CM5VER=$(wget -qO - http://archive.cloudera.com/cm5/redhat/6/x86_64/cm/ | awk 'BEGIN{ RS="<a *href *= *\""} NR>2 {sub(/".*/,"");print;}' | grep "^5" | tail -1 | tr "/" " " | sed -e 's/^ *//')
 VERLATEST="$CM5VER"
-VERTMP="$VERTMP $CM5VER"
+VERTMP="$VERTMP4 $VERTMP5"
 
 START_SCM_AGENT=
 SERVER_DB=${SERVER_DB:-p}
