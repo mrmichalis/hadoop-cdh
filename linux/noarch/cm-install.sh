@@ -26,6 +26,14 @@ cat << EOF
 EOF
 }
 
+function prepHiveDB() {
+  export PGPASSWORD=$(head -1 /var/lib/cloudera-scm-server-db/data/generated_password.txt)
+  SQLCMD=( """CREATE ROLE hive LOGIN PASSWORD 'hive';""" """CREATE DATABASE hive OWNER hive ENCODING 'UTF8';""" """ALTER DATABASE hive SET standard_conforming_strings = off;""" )
+  for SQL in "${SQLCMD[@]}"; do    
+    psql -A -t -d scm -U cloudera-scm -h localhost -p 7432 -c "${SQL}"
+  done  
+}
+
 function installJava() {
   echo Installing JDK $1
   if [ $1 -ne "7" ]; then
@@ -72,6 +80,7 @@ EOF
 function startServices() {
  if [[ $SERVER_DB = "p" ]]; then 
   service cloudera-scm-server-db start
+  prepHiveDB
  fi
  for SERVICE_NAME in cloudera-scm-server $START_SCM_AGENT; do
   service $SERVICE_NAME start
@@ -98,14 +107,6 @@ function managerSettings() {
    curl -u admin:admin http://$(hostname):7180/api/v5/cm/deployment?deleteCurrentDeployment=true --upload-file $INIT_FILE
    service cloudera-scm-server restart
  fi
-}
-
-function prepHiveDB() {
-  export PGPASSWORD=$(head -1 /var/lib/cloudera-scm-server-db/data/generated_password.txt)
-  SQLCMD=( """CREATE ROLE hive LOGIN PASSWORD 'hive';""" """CREATE DATABASE hive OWNER hive ENCODING 'UTF8';""" """ALTER DATABASE hive SET standard_conforming_strings = off;""" )
-  for SQL in "${SQLCMD[@]}"; do    
-    psql -A -t -d scm -U cloudera-scm -h localhost -p 7432 -c "${SQL}"
-  done  
 }
 
 #set -x
@@ -210,8 +211,7 @@ if [[ $USEBIN == "false" ]]; then
       sh /root/CDH/mysql-init.sh
       echo /usr/share/cmf/schema/scm_prepare_database.sh mysql scm scm password
     else 
-      yum install -y cloudera-manager-server-db*
-      prepHiveDB
+      yum install -y cloudera-manager-server-db*      
     fi
     startServices
     exit 0
