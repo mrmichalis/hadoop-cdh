@@ -24,11 +24,12 @@ then
 fi
 # [end of auto-screen snippet]
 EOF
+mkdir -p /root/CDH
 
 function installPdsh() {
   echo "Installing Parallel Distributed Shell v2.29"
-  wget --no-check-certificate --no-cookies -nv https://pdsh.googlecode.com/files/pdsh-2.29.tar.bz2 -O /tmp/pdsh-2.29.tar.bz2
-  tar xjvf /tmp/pdsh-2.29.tar.bz2 && cd /tmp/pdsh-2.29/
+  wget --no-check-certificate --no-cookies -nv https://pdsh.googlecode.com/files/pdsh-2.29.tar.bz2 -O /root/CDH/pdsh-2.29.tar.bz2
+  tar xjvf /root/CDH/pdsh-2.29.tar.bz2 && cd /root/CDH/pdsh-2.29/
   ./configure --with-ssh
   make
   make install
@@ -55,15 +56,14 @@ fi
 echo "192.168.88.250 archive.cloudera.com" >> /etc/hosts
 echo "192.168.88.250 archive-primary.cloudera.com" >> /etc/hosts
 echo "192.168.88.250 beta.cloudera.com" >> /etc/hosts
-mkdir -p /root/CDH
 #end -init
 
-wget --no-check-certificate "https://github.com/mrmichalis/hadoop-cdh/raw/master/linux/noarch/.screenrc" -O /root/.screenrc 
-wget --no-check-certificate "https://github.com/mrmichalis/hadoop-cdh/raw/master/linux/noarch/post-download.lst" -O /root/CDH/post-download.lst 
+wget --no-check-certificate -nv "https://github.com/mrmichalis/hadoop-cdh/raw/master/linux/noarch/.screenrc" -O /root/.screenrc 
+wget --no-check-certificate -nv "https://github.com/mrmichalis/hadoop-cdh/raw/master/linux/noarch/post-download.lst" -O /root/CDH/post-download.lst 
 
 POST_OPTIONS=$(cat /root/CDH/post-download.lst)
 for OPT in ${POST_OPTIONS[@]}; do
-  wget --no-check-certificate "https://github.com/mrmichalis/hadoop-cdh/raw/master/linux/noarch/${OPT}" -O /root/CDH/${OPT} && chmod +x /root/CDH/${OPT}  
+  wget --no-check-certificate -nv "https://github.com/mrmichalis/hadoop-cdh/raw/master/linux/noarch/${OPT}" -O /root/CDH/${OPT} && chmod +x /root/CDH/${OPT}  
 done;
 
 # Make sure udev doesn't block our network
@@ -78,9 +78,9 @@ mkdir /etc/udev/rules.d/70-persistent-net.rules
 echo "* Installing SSH keys..."
 mkdir -p /root/.ssh
 chmod 700 /root/.ssh
-wget --no-check-certificate 'https://raw.github.com/mitchellh/vagrant/master/keys/vagrant.pub' -O /root/.ssh/authorized_keys
-wget --no-check-certificate 'https://raw.github.com/mitchellh/vagrant/master/keys/vagrant' -O /root/.ssh/id_rsa
-wget --no-check-certificate 'https://raw.github.com/mitchellh/vagrant/master/keys/vagrant.pub' -O /root/.ssh/id_rsa.pub
+wget --no-check-certificate -nv 'https://raw.github.com/mitchellh/vagrant/master/keys/vagrant.pub' -O /root/.ssh/authorized_keys
+wget --no-check-certificate -nv 'https://raw.github.com/mitchellh/vagrant/master/keys/vagrant' -O /root/.ssh/id_rsa
+wget --no-check-certificate -nv 'https://raw.github.com/mitchellh/vagrant/master/keys/vagrant.pub' -O /root/.ssh/id_rsa.pub
 chmod 600 /root/.ssh/authorized_keys /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
 chown -R root /root/.ssh
 
