@@ -2,6 +2,7 @@
 set -x
 
 #start -init
+mkdir -p /root/CDH
 sed -i 's/alias/#alias/g' /root/.bashrc
 #echo "set -o vi"    >> /root/.bashrc
 echo "alias vi=vim" >> /root/.bashrc
@@ -24,7 +25,6 @@ then
 fi
 # [end of auto-screen snippet]
 EOF
-mkdir -p /root/CDH
 
 function installPdsh() {
   echo "Installing Parallel Distributed Shell v2.29"
