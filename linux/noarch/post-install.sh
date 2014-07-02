@@ -28,8 +28,9 @@ EOF
 
 function installPdsh() {
   echo "Installing Parallel Distributed Shell v2.29"
+  mkdir -p /root/CDH/pdsh-2.29/
   wget --no-check-certificate --no-cookies -nv https://pdsh.googlecode.com/files/pdsh-2.29.tar.bz2 -O /root/CDH/pdsh-2.29.tar.bz2
-  tar xjvf /root/CDH/pdsh-2.29.tar.bz2 && cd /root/CDH/pdsh-2.29/
+  tar xjvf /root/CDH/pdsh-2.29.tar.bz2 -C /root/CDH/pdsh-2.29/ && cd /root/CDH/pdsh-2.29/
   ./configure --with-ssh
   make
   make install
