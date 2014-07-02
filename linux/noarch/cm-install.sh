@@ -134,7 +134,7 @@ fi
 for target in "$@"; do
   case "$target" in
   --startagent)
-    START_SCM_AGENT=${START_SCM_AGENT:-true}
+    START_SCM_AGENT=${START_SCM_AGENT:-cloudera-scm-agent}
     shift
     ;;
   --agent)
@@ -184,6 +184,7 @@ echo USEBIN: $USEBIN
 echo SERVER_DB: $SERVER_DB
 echo JDK_VER: $JDK_VER
 echo CMHOST $CMHOST
+echo START $START_SCM_AGENT
 echo "============================================="
 if [[ $CMVERSION == *4* ]]; then
   REPOVER="4";
