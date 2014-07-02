@@ -54,17 +54,6 @@ function installJava() {
   echo 'export JAVA_HOME=/usr/java/default' > /etc/profile.d/jdk.sh
   echo 'export PATH=$JAVA_HOME/bin:$PATH' >> /etc/profile.d/jdk.sh
 }
-function installPdsh() {
-  echo "Installing Parallel Distributed Shell v2.29"
-  $WGET https://pdsh.googlecode.com/files/pdsh-2.29.tar.bz2 -O /root/CDH/pdsh-2.29.tar.bz2
-  tar xjvf /root/CDH/pdsh-2.29.tar.bz2 && cd /root/CDH/pdsh-2.29/
-  ./configure --with-ssh
-  make
-  make install
-  echo 'export PDSH_SSH_ARGS_APPEND="-o ConnectTimeout=5 -o CheckHostIP=no -o StrictHostKeyChecking=no"' >> /root/.bashrc
-  export PDSH_SSH_ARGS_APPEND="-o ConnectTimeout=5 -o CheckHostIP=no -o StrictHostKeyChecking=no"
-  cd ..
-}
 
 function setRepo() {
   echo "Set cloudera-manager.repo to CM v$1"
@@ -200,8 +189,7 @@ if [[ $CMVERSION == *4* ]]; then
 fi
 stopServices
 if [[ $USEBIN == "false" ]]; then
-  echo $0: using RPM Installer
-  installPdsh
+  echo $0: using RPM Installer  
   installJava $JDK_VER
   setRepo $CMVERSION
   if [[ $INSTALL_AGENT_ONLY == "true" ]]; then

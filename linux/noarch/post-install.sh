@@ -25,6 +25,18 @@ fi
 # [end of auto-screen snippet]
 EOF
 
+function installPdsh() {
+  echo "Installing Parallel Distributed Shell v2.29"
+  $WGET https://pdsh.googlecode.com/files/pdsh-2.29.tar.bz2 -O /root/CDH/pdsh-2.29.tar.bz2
+  tar xjvf /root/CDH/pdsh-2.29.tar.bz2 && cd /root/CDH/pdsh-2.29/
+  ./configure --with-ssh
+  make
+  make install
+  echo 'export PDSH_SSH_ARGS_APPEND="-o ConnectTimeout=5 -o CheckHostIP=no -o StrictHostKeyChecking=no"' >> /root/.bashrc
+  export PDSH_SSH_ARGS_APPEND="-o ConnectTimeout=5 -o CheckHostIP=no -o StrictHostKeyChecking=no"
+  cd ..
+}
+
 echo "* Install Puppet 6.10 repo"
 rpm -ivh https://yum.puppetlabs.com/el/6/products/x86_64/puppetlabs-release-6-10.noarch.rpm
 echo "* Install Puppet CM API and pre-requisites"
@@ -33,6 +45,7 @@ easy_install pip
 pip install python-novaclient
 pip install cm_api
 pip install fabric && cat /dev/null > /usr/lib/python2.6/site-packages/Fabric-1.9.0-py2.6.egg-info/requires.txt
+installPdsh
 
 #http://www.cyberciti.biz/faq/unable-to-read-consumer-identity-rhn-yum-warning/
 if grep -q -i "Red Hat" /etc/redhat-release; then
