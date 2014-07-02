@@ -26,7 +26,7 @@ cat << EOF
 EOF
 }
 
-function installJava {
+function installJava() {
   echo Installing JDK $1
   if [ $1 -ne "7" ]; then
     echo "* Oracle JDK 6u31 from CM..."
@@ -54,7 +54,7 @@ function installJava {
   echo 'export JAVA_HOME=/usr/java/default' > /etc/profile.d/jdk.sh
   echo 'export PATH=$JAVA_HOME/bin:$PATH' >> /etc/profile.d/jdk.sh
 }
-function installPdsh {
+function installPdsh() {
   echo "Installing Parallel Distributed Shell v2.29"
   $WGET https://pdsh.googlecode.com/files/pdsh-2.29.tar.bz2 -O /root/CDH/pdsh-2.29.tar.bz2
   tar xjvf /root/CDH/pdsh-2.29.tar.bz2 && cd /root/CDH/pdsh-2.29/
@@ -66,7 +66,7 @@ function installPdsh {
   cd ..
 }
 
-function setRepo {
+function setRepo() {
   echo "Set cloudera-manager.repo to CM v$1"
   yum clean all 
   rpm --import http://archive.cloudera.com/cdh${REPOVER}/redhat/6/x86_64/cdh/RPM-GPG-KEY-cloudera
@@ -80,7 +80,7 @@ gpgcheck = 1
 EOF
 }
 
-startServices() {
+function startServices() {
  if [[ $SERVER_DB = "p" ]]; then 
   service cloudera-scm-server-db start
  fi
@@ -94,13 +94,13 @@ startServices() {
  echo nc -z $(hostname -f) 7180
 }
 
-stopServices() {
+function stopServices() {
  for SERVICE_NAME in cloudera-scm-agent cloudera-scm-server cloudera-scm-server-db; do
   service $SERVICE_NAME stop
  done
 }
 
-function managerSettings {
+function managerSettings() {
  # curl -u admin:admin http://$(hostname):7180/api/v5/cm/deployment > managerSettings.json
  INIT_FILE="/root/CDH/managerSettings.json"
  wget --nv "http://archive.cloudera.com/managerSettings.json" -O "$INIT_FILE"
@@ -109,6 +109,16 @@ function managerSettings {
    curl -u admin:admin http://$(hostname):7180/api/v5/cm/deployment?deleteCurrentDeployment=true --upload-file $INIT_FILE
    service cloudera-scm-server restart
  fi
+}
+
+function prepHiveDB() {
+  PGPWD=$(head -1 /var/lib/cloudera-scm-server-db/data/generated_password.txt)
+  export PGPASSWORD=$(head -1 /var/lib/cloudera-scm-server-db/data/generated_password.txt)
+  SQLCMD=("CREATE ROLE hive LOGIN PASSWORD 'hive';" "CREATE DATABASE hive OWNER hive ENCODING 'UTF8';" "ALTER DATABASE hive SET standard_conforming_strings = off;")
+  for SQL in "${SQLCMD[@]}"; do
+     PGPASSWORD=${PGPWD}
+     psql -A -t -d scm -U cloudera-scm -h localhost -p 7432 -c ${SQL}
+  done  
 }
 
 #set -x
@@ -215,6 +225,7 @@ if [[ $USEBIN == "false" ]]; then
       echo /usr/share/cmf/schema/scm_prepare_database.sh mysql scm scm password
     else 
       yum install -y cloudera-manager-server-db*
+      prepHiveDB
     fi
     startServices
     exit 0
