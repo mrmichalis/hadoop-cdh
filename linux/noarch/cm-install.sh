@@ -112,12 +112,10 @@ function managerSettings() {
 }
 
 function prepHiveDB() {
-  PGPWD=$(head -1 /var/lib/cloudera-scm-server-db/data/generated_password.txt)
   export PGPASSWORD=$(head -1 /var/lib/cloudera-scm-server-db/data/generated_password.txt)
-  SQLCMD=("CREATE ROLE hive LOGIN PASSWORD 'hive';" "CREATE DATABASE hive OWNER hive ENCODING 'UTF8';" "ALTER DATABASE hive SET standard_conforming_strings = off;")
-  for SQL in "${SQLCMD[@]}"; do
-     PGPASSWORD=${PGPWD}
-     psql -A -t -d scm -U cloudera-scm -h localhost -p 7432 -c ${SQL}
+  SQLCMD=( """CREATE ROLE hive LOGIN PASSWORD 'hive';""" """CREATE DATABASE hive OWNER hive ENCODING 'UTF8';""" """ALTER DATABASE hive SET standard_conforming_strings = off;""" )
+  for SQL in "${SQLCMD[@]}"; do    
+    psql -A -t -d scm -U cloudera-scm -h localhost -p 7432 -c "${SQL}"
   done  
 }
 
