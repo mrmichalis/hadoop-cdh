@@ -80,6 +80,9 @@ EOF
 function startServices() {
  if [[ $SERVER_DB = "p" ]]; then 
   service cloudera-scm-server-db start
+  # trust everyone to access postgresql and signal pg to reload its config
+  sed -ie 's/0 reject/0 trust/g' "/var/lib/cloudera-scm-server-db/data/pg_hba.conf"
+  sudo -u cloudera-scm pg_ctl reload -D "/var/lib/cloudera-scm-server-db/data/"
   prepHiveDB
  fi
  for SERVICE_NAME in cloudera-scm-server $START_SCM_AGENT; do
