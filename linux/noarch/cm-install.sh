@@ -16,8 +16,8 @@ cat << EOF
     --jdk=[6 OR 7]                  :   Install with JDK 6 or JDK 7
   
   Agents
-    --agent                         :   Install Agents only
-    --startagent                    :   Start Agents after installation
+    --agent                         :   Install Agent only
+    --startagent                    :   Start Agent after installation
     --cmhost=[hostname/ip]          :   Location of the CM Server Hosts
   
   Default
