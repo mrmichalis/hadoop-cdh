@@ -92,6 +92,7 @@ function startServices() {
  echo tail -f /var/log/cloudera-scm-server/cloudera-scm-server.log
  echo service cloudera-scm-server-db status
  echo service cloudera-scm-server status
+ echo curl -i -u 'admin:admin' -X POST http://$(hostname -f):7180/api/v6/cm/trial/begin
  echo nc -z $(hostname -f) 7180
 }
 
