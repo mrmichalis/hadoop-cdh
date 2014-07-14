@@ -18,8 +18,17 @@ function promptyn () {
   done
 }
 
-#pre-req
-yum install krb5-server krb5-workstation krb5-libs -y
+#pre-req 
+
+yum install krb5-server krb5-workstation krb5-libs rng-tools -y
+# KB/000002527
+/etc/init.d/rngd start
+chkconfig rngd on
+echo "Add EXTRAOPTIONS /etc/sysconfig/rngd"
+cat << EOF > /etc/sysconfig/rngd
+# Add extra options here
+EXTRAOPTIONS="-i -o /dev/random -r /dev/urandom -t 10 -W 2048"
+EOF
 
 #REALM=${1^^}
 REALM=LUNIX.LAN
