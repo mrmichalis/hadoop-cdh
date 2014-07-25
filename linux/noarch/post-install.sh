@@ -43,8 +43,8 @@ rpm -ivh https://yum.puppetlabs.com/el/6/products/x86_64/puppetlabs-release-6-10
 echo "* Install Puppet CM API and pre-requisites"
 yum install -y puppet git python-argparse sshpass libffi-devel python-setuptools
 easy_install pip
-pip install python-novaclient
-pip install cm_api
+git clone https://github.com/openstack/python-novaclient.git /root/python-novaclient && pip install /root/python-novaclient
+git clone https://github.com/cloudera/cm_api.git /root/cm_api && pip install /root/cm_api
 pip install fabric && cat /dev/null > /usr/lib/python2.6/site-packages/Fabric-1.9.0-py2.6.egg-info/requires.txt
 installPdsh
 
