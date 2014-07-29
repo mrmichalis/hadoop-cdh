@@ -29,13 +29,13 @@ EOF
 function installPdsh() {
   echo "Installing Parallel Distributed Shell v2.29"
   wget --no-check-certificate --no-cookies -nv https://pdsh.googlecode.com/files/pdsh-2.29.tar.bz2 -O /root/CDH/pdsh-2.29.tar.bz2
-  tar xjvf /root/CDH/pdsh-2.29.tar.bz2 -C /root/CDH/ && cd /root/CDH/pdsh-2.29/
+  tar xjvf /root/CDH/pdsh-2.29.tar.bz2 -C /root/CDH/ && pushd /root/CDH/pdsh-2.29/
   ./configure --with-ssh
   make
   make install
   echo 'export PDSH_SSH_ARGS_APPEND="-o ConnectTimeout=5 -o CheckHostIP=no -o StrictHostKeyChecking=no"' >> /root/.bashrc
   export PDSH_SSH_ARGS_APPEND="-o ConnectTimeout=5 -o CheckHostIP=no -o StrictHostKeyChecking=no"
-  cd ..
+  popd
 }
 
 echo "* Install Puppet 6.10 repo"
