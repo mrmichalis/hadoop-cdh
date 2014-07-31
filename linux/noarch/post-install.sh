@@ -59,12 +59,12 @@ echo "192.168.88.250 archive-primary.cloudera.com" >> /etc/hosts
 echo "192.168.88.250 beta.cloudera.com" >> /etc/hosts
 #end -init
 
-wget --no-check-certificate -nv 'https://raw.githubusercontent.com/mrmichalis/hadoop-cdh/raw/master/linux/noarch/.screenrc' -O /root/.screenrc 
-wget --no-check-certificate -nv 'https://raw.githubusercontent.com/mrmichalis/hadoop-cdh/raw/master/linux/noarch/post-download.lst' -O /root/CDH/post-download.lst 
+wget --no-check-certificate -nv 'https://github.com/mrmichalis/hadoop-cdh/raw/master/linux/noarch/.screenrc' -O /root/.screenrc
+wget --no-check-certificate -nv 'https://github.com/mrmichalis/hadoop-cdh/raw/master/linux/noarch/post-download.lst' -O /root/CDH/post-download.lst
 
 POST_OPTIONS=$(cat /root/CDH/post-download.lst)
 for OPT in ${POST_OPTIONS[@]}; do
-  wget --no-check-certificate -nv "https://raw.githubusercontent.com/mrmichalis/hadoop-cdh/raw/master/linux/noarch/${OPT}" -O /root/CDH/${OPT} && chmod +x /root/CDH/${OPT}  
+  wget --no-check-certificate -nv "https://github.com/mrmichalis/hadoop-cdh/raw/master/linux/noarch/${OPT}" -O /root/CDH/${OPT} && chmod +x /root/CDH/${OPT}
 done;
 
 # Make sure udev doesn't block our network
@@ -79,9 +79,9 @@ mkdir /etc/udev/rules.d/70-persistent-net.rules
 echo "* Installing SSH keys..."
 mkdir -p /root/.ssh
 chmod 700 /root/.ssh
-wget --no-check-certificate -nv 'https://raw.githubusercontent.com/mitchellh/vagrant/master/keys/vagrant.pub' -O /root/.ssh/authorized_keys
-wget --no-check-certificate -nv 'https://raw.githubusercontent.com/mitchellh/vagrant/master/keys/vagrant' -O /root/.ssh/id_rsa
-wget --no-check-certificate -nv 'https://raw.githubusercontent.com/mitchellh/vagrant/master/keys/vagrant.pub' -O /root/.ssh/id_rsa.pub
+wget --no-check-certificate -nv 'https://github.com/mitchellh/vagrant/raw/master/keys/vagrant.pub' -O /root/.ssh/authorized_keys
+wget --no-check-certificate -nv 'https://github.com/mitchellh/vagrant/raw/master/keys/vagrant' -O /root/.ssh/id_rsa
+wget --no-check-certificate -nv 'https://github.com/mitchellh/vagrant/raw/master/keys/vagrant.pub' -O /root/.ssh/id_rsa.pub
 chmod 600 /root/.ssh/authorized_keys /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
 chown -R root /root/.ssh
 
