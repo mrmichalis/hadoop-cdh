@@ -34,8 +34,7 @@ service mysqld start
   # mysql -u root -e "GRANT ALL ON *.* TO 'root'@'archive.cloudera.com' IDENTIFIED BY 'password' WITH GRANT OPTION;"
 # done
 puppet apply /root/CDH/mysql-init.pp
-mysql -u root -e 'show databases;'
-mysql -u root -e 'select user,host from mysql.user;'
+
 
 if [[ ! -e "/usr/share/java/mysql-connector-java.jar" ]];then
   echo "* Install MySQL Connector ..."
@@ -47,5 +46,5 @@ if [[ ! -e "/usr/share/java/mysql-connector-java.jar" ]];then
 fi
 # http://www.cloudera.com/content/cloudera-content/cloudera-docs/CM4Ent/latest/Cloudera-Manager-Installation-Guide/cmig_install_path_B.html
 # /usr/share/cmf/schema/scm_prepare_database.sh mysql -h localhost -u temp -ppassword --scm-host localhost scm scm password
-
-  
+mysql -u root -e 'show databases;'
+mysql -u root -e 'select user,host from mysql.user;'
