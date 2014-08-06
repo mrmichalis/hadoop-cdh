@@ -47,10 +47,11 @@ function installJava() {
     [[ -d "/usr/java/default/jre/lib/security/" ]] && unzip -oj /root/CDH/jce_policy-6.zip -d /usr/java/default/jre/lib/security/
   else
     if !(command -v java >/dev/null 2>&1); then
-      echo "* Oracle JDK 7u25 from CM..."
-      wget http://archive.cloudera.com/cm5/redhat/6/x86_64/cm/5/RPMS/x86_64/oracle-j2sdk1.7-1.7.0+update45-1.x86_64.rpm -O /root/CDH/oracle-j2sdk1.7-1.7.0+update45-1.x86_64.rpm
-      command -v java >/dev/null 2>&1 || rpm -ivh /root/CDH/oracle-j2sdk1.7-1.7.0+update45-1.x86_64.rpm
-      ln -s /usr/java/jdk1.7.0_45-cloudera/ /usr/java/latest
+      echo "* Oracle JDK 7u55 from CM..."
+      VER="oracle-j2sdk1.7-1.7.0+update55-2.x86_64"
+      wget http://archive.cloudera.com/cm5/redhat/6/x86_64/cm/5/RPMS/x86_64/${VER}.rpm -O /root/CDH/${VER}.rpm
+      command -v java >/dev/null 2>&1 || rpm -ivh /root/CDH/${VER}.rpm
+      ln -s /usr/java/jdk1.7.0_55-cloudera/ /usr/java/latest
       ln -s /usr/java/latest /usr/java/default
       update-alternatives --install /usr/bin/java java /usr/java/default/bin/java 10
       echo "* Downloading Java Cryptography Extension (JCE 7) ..."
@@ -123,7 +124,7 @@ VERTMP="$VERTMP4 $VERTMP5"
 
 START_SCM_AGENT=
 SERVER_DB=${SERVER_DB:-p}
-JDK_VER=${JDK_VER:-6}
+JDK_VER=${JDK_VER:-7}
 CMVERSION=${VERLATEST//[[:blank:]]/}
 USEBIN=${USEBIN:-false}
 REPOVER=${REPOVER:-5}
