@@ -177,6 +177,13 @@ function kerberos_cmapi() {
             # "value" : "<property>\r\n  <name>hive.server2.authentication</name>\r\n  <value>KERBEROS</value>\r\n</property>\r\n"
           # } ] } }        
   # }
+# curl -X POST -H "Content-Type:application/json" -u admin:admin -d '{
+   # "sshPort" : 22,
+   # "userName" : "root",
+   # "password" : "password",
+   # "hostNames" : ["192.168.88.215"]
+# }' http://$(hostname -f):7180/api/v6/cm/commands/hostInstall
+ 
 
 }
 
