@@ -45,7 +45,7 @@ yum install -y puppet git python-argparse sshpass libffi-devel python-setuptools
 yum groupinstall -y "Development tools"
 easy_install pip
 git clone https://github.com/openstack/python-novaclient.git /root/python-novaclient && pip install /root/python-novaclient
-git clone https://github.com/cloudera/cm_api.git /root/cm_api && pip install /root/cm_api
+git clone https://github.com/cloudera/cm_api.git /root/cm_api && pip install /root/cm_api/python
 #pip install fabric && cat /dev/null > /usr/lib/python2.6/site-packages/Fabric-1.9.0-py2.6.egg-info/requires.txt
 installPdsh
 
