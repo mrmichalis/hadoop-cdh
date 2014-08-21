@@ -26,6 +26,17 @@ cat << EOF
 EOF
 }
 
+usefulCmds(){
+echo "Useful commands"
+cat <<EOF
+ tail -f /var/log/cloudera-scm-server/cloudera-scm-server.log
+ service cloudera-scm-server-db status
+ service cloudera-scm-server status
+ curl -i -u 'admin:admin' -X POST http://$(hostname -f):7180/api/v6/cm/trial/begin
+ watch -n 1 nc -z $(hostname -f) 7180
+EOF
+}
+
 function prepHiveDB() {
   export PGPASSWORD=$(head -1 /var/lib/cloudera-scm-server-db/data/generated_password.txt)
   SQLCMD=( """CREATE ROLE hive LOGIN PASSWORD 'hive';""" """CREATE DATABASE hive OWNER hive ENCODING 'UTF8';""" """ALTER DATABASE hive SET standard_conforming_strings = off;""" )
@@ -89,12 +100,6 @@ function startServices() {
  for SERVICE_NAME in cloudera-scm-server $START_SCM_AGENT; do
   service $SERVICE_NAME start
  done
- echo "Useful commands"
- echo tail -f /var/log/cloudera-scm-server/cloudera-scm-server.log
- echo service cloudera-scm-server-db status
- echo service cloudera-scm-server status
- echo curl -i -u 'admin:admin' -X POST http://$(hostname -f):7180/api/v6/cm/trial/begin
- echo nc -z $(hostname -f) 7180
 }
 
 function stopServices() {
@@ -220,6 +225,7 @@ if [[ $USEBIN == "false" ]]; then
       yum install -y cloudera-manager-server-db*      
     fi
     startServices
+    usefulCmds
     exit 0
   fi  
 
@@ -231,5 +237,6 @@ else
   ./cloudera-manager-installer.bin --i-agree-to-all-licenses --noprompt --noreadme --nooptions
   #./cloudera-manager-installer.bin --use_embedded_db=0 --db_pw=cloudera_scm --no-prompt --i-agree-to-all-licenses --noreadme
   startServices
+  usefulCmds
   exit 0
 fi

@@ -39,15 +39,18 @@ function installPdsh() {
 }
 
 echo "* Install Puppet 6.10 repo"
-rpm -ivh https://yum.puppetlabs.com/el/6/products/x86_64/puppetlabs-release-6-10.noarch.rpm
+rpm -ivh https://yum.puppetlabs.com/el/6/products/x86_64/puppetlabs-release-6-10.noarch.rpmecho "* Install Puppet 6.10 repo"
 echo "* Install Puppet CM API and pre-requisites"
-yum install -y puppet git python-argparse sshpass libffi-devel python-setuptools 
+yum install -y puppet git python-argparse sshpass libffi-devel python-setuptools
 yum groupinstall -y "Development tools"
 easy_install pip
 git clone https://github.com/openstack/python-novaclient.git /root/python-novaclient && pip install /root/python-novaclient
 git clone https://github.com/cloudera/cm_api.git /root/cm_api && pip install /root/cm_api/python
 #pip install fabric && cat /dev/null > /usr/lib/python2.6/site-packages/Fabric-1.9.0-py2.6.egg-info/requires.txt
 installPdsh
+
+echo "* install NFS Utils"
+yum install -y nfs-utils
 
 #http://www.cyberciti.biz/faq/unable-to-read-consumer-identity-rhn-yum-warning/
 if grep -q -i "Red Hat" /etc/redhat-release; then
