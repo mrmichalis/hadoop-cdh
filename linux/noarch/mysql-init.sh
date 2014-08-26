@@ -1,39 +1,39 @@
 #!/usr/bin/env bash
-# service mysqld start
-# yum install -y expect
-# expect -c " 
-# set timeout 5
-# spawn mysql_secure_installation
+service mysqld start
+yum install -y expect
+expect -c " 
+set timeout 5
+spawn mysql_secure_installation
  
-# expect \"Enter current password for root (enter for none):\"
-# send \"\r\"
-# expect \"Set root password?\"
-# send \"n\r\"
-# expect \"Remove anonymous users?\"
-# send \"n\r\"
-# expect \"Disallow root login remotely?\"
-# send \"n\r\"
-# expect \"Remove test database and access to it?\"
-# send \"n\r\"
-# expect \"Reload privilege tables now?\"
-# send \"y\r\"
-# expect eof
-# " 
-# yum remove -y expect
+expect \"Enter current password for root (enter for none):\"
+send \"\r\"
+expect \"Set root password?\"
+send \"n\r\"
+expect \"Remove anonymous users?\"
+send \"n\r\"
+expect \"Disallow root login remotely?\"
+send \"n\r\"
+expect \"Remove test database and access to it?\"
+send \"n\r\"
+expect \"Reload privilege tables now?\"
+send \"y\r\"
+expect eof
+" 
+yum remove -y expect
 
 chkconfig mysqld on
 service mysqld start
-# sleep 10
+sleep 10
 
-# for service in scm hue amon smon rman hmon nav hive temp; do
-  # mysql -u root -e "CREATE DATABASE IF NOT EXISTS $service DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;"
-  # mysql -u root -e "GRANT ALL ON *.* TO '$service'@'localhost' IDENTIFIED BY 'password' WITH GRANT OPTION;"
-  # mysql -u root -e "GRANT ALL ON *.* TO '$service'@'$(hostname -f)' IDENTIFIED BY 'password' WITH GRANT OPTION;"
-  # mysql -u root -e "GRANT ALL ON *.* TO '$service'@'%' IDENTIFIED BY 'password' WITH GRANT OPTION;"
-  # mysql -u root -e "GRANT ALL ON *.* TO '$service'@'%.lunix.lan' IDENTIFIED BY 'password' WITH GRANT OPTION;"
-  # mysql -u root -e "GRANT ALL ON *.* TO 'root'@'archive.cloudera.com' IDENTIFIED BY 'password' WITH GRANT OPTION;"
-# done
-puppet apply /root/CDH/mysql-init.pp
+for service in scm hue amon smon rman hmon nav hive temp oozie; do
+  mysql -u root -e "CREATE DATABASE IF NOT EXISTS $service DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;"
+  mysql -u root -e "GRANT ALL ON *.* TO '$service'@'localhost' IDENTIFIED BY 'password' WITH GRANT OPTION;"
+  mysql -u root -e "GRANT ALL ON *.* TO '$service'@'$(hostname -f)' IDENTIFIED BY 'password' WITH GRANT OPTION;"
+  mysql -u root -e "GRANT ALL ON *.* TO '$service'@'%' IDENTIFIED BY 'password' WITH GRANT OPTION;"
+  mysql -u root -e "GRANT ALL ON *.* TO '$service'@'%.lunix.lan' IDENTIFIED BY 'password' WITH GRANT OPTION;"
+  mysql -u root -e "GRANT ALL ON *.* TO 'root'@'archive.cloudera.com' IDENTIFIED BY 'password' WITH GRANT OPTION;"
+done
+# puppet apply /root/CDH/mysql-init.pp
 
 
 if [[ ! -e "/usr/share/java/mysql-connector-java.jar" ]];then
