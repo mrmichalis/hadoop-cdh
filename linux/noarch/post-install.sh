@@ -38,7 +38,7 @@ function installPdsh() {
   popd
 }
 
-yum install -y nc
+yum install -y nc screen
 echo "* Install Puppet 6.10 repo"
 rpm -ivh https://yum.puppetlabs.com/el/6/products/x86_64/puppetlabs-release-6-10.noarch.rpmecho "* Install Puppet 6.10 repo"
 echo "* Install Puppet CM API and pre-requisites"
