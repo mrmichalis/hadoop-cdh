@@ -24,9 +24,9 @@ then
   echo "Screen failed! continuing with normal bash startup"
 fi
 # [end of auto-screen snippet]
-JAVA_HOME=/usr/java/default
-export JAVA_HOME
-export PATH=$PATH:JAVA_HOME/bin;JAVA_HOME/jre/bin
+
+#export JAVA_HOME=/usr/java/default
+#export PATH=$PATH:$JAVA_HOME/bin;$JAVA_HOME/jre/bin
 EOF
 
 function installPdsh() {
