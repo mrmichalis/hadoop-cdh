@@ -54,7 +54,7 @@ function installJava() {
 
     echo "* Downloading Java Cryptography Extension (JCE) ..."
     # See https://github.com/flexiondotorg/oab-java6/blob/master/oab-java.sh
-    $WGET --header "Cookie: oraclelicense=accept-securebackup-cookie;gpw_e24=http://edelivery.oracle.com" http://download.oracle.com/otn-pub/java/jce_policy/6/jce_policy-6.zip -O /root/CDH/jce_policy-6.zip
+    $WGET --no-check-certificate --header "Cookie: oraclelicense=accept-securebackup-cookie;gpw_e24=http://edelivery.oracle.com" http://download.oracle.com/otn-pub/java/jce_policy/6/jce_policy-6.zip -O /root/CDH/jce_policy-6.zip
     [[ -d "/usr/java/default/jre/lib/security/" ]] && unzip -oj /root/CDH/jce_policy-6.zip -d /usr/java/default/jre/lib/security/
   else
     if !(command -v java >/dev/null 2>&1); then
@@ -66,7 +66,7 @@ function installJava() {
       ln -s /usr/java/latest /usr/java/default
       update-alternatives --install /usr/bin/java java /usr/java/default/bin/java 10
       echo "* Downloading Java Cryptography Extension (JCE 7) ..."
-      $WGET --header "Cookie: oraclelicensejce-7-oth-JPR=accept-securebackup-cookie;gpw_e24=http://edelivery.oracle.com" http://download.oracle.com/otn-pub/java/jce/7/UnlimitedJCEPolicyJDK7.zip -O /root/CDH/UnlimitedJCEPolicyJDK7.zip
+      $WGET --no-check-certificate --header "Cookie: oraclelicense=accept-securebackup-cookie;gpw_e24=http://edelivery.oracle.com" http://download.oracle.com/otn-pub/java/jce/7/UnlimitedJCEPolicyJDK7.zip -O /root/CDH/UnlimitedJCEPolicyJDK7.zip
       [[ -d "/usr/java/default/jre/lib/security/" ]] && unzip -oj /root/CDH/UnlimitedJCEPolicyJDK7.zip -d /usr/java/default/jre/lib/security/
     fi
   fi
