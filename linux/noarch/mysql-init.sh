@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+yum install -y mysql mysql-server mysql-libs
+
 service mysqld start
 yum install -y expect
 expect -c " 
