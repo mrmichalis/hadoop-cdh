@@ -82,15 +82,8 @@ mkdir /etc/udev/rules.d/70-persistent-net.rules
 # rm -rf /dev/.udev/
 # rm /lib/udev/rules.d/75-persistent-net-generator.rules
 
-#Install vagrant keys. See: https://github.com/mitchellh/vagrant/tree/master/keys
-echo "* Installing SSH keys..."
-mkdir -p /root/.ssh
-chmod 700 /root/.ssh
-wget --no-check-certificate -nv 'https://github.com/mitchellh/vagrant/raw/master/keys/vagrant.pub' -O /root/.ssh/authorized_keys
-wget --no-check-certificate -nv 'https://github.com/mitchellh/vagrant/raw/master/keys/vagrant' -O /root/.ssh/id_rsa
-wget --no-check-certificate -nv 'https://github.com/mitchellh/vagrant/raw/master/keys/vagrant.pub' -O /root/.ssh/id_rsa.pub
-chmod 600 /root/.ssh/authorized_keys /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
-chown -R root /root/.ssh
+#* Installing SSH keys...
+curl -L https://raw.githubusercontent.com/mrmichalis/hadoop-cdh/master/linux/noarch/keys/get_ssh_keys.sh | bash
 
 # http://fredkschott.com/post/2014/02/git-log-is-so-2005/
 git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%C(bold blue)<%an>%Creset' --abbrev-commit"
