@@ -8,3 +8,4 @@ mysql-init.pp
 mysql-init.sh
 orajava-install.sh
 vboxadditions.sh
+jce-unlimited.sh
