@@ -27,7 +27,7 @@ chkconfig mysqld on
 service mysqld start
 sleep 10
 
-for service in scm hue amon smon rman hmon nav hive temp oozie; do
+for service in scm hue amon smon rman hmon nav hive temp oozie sentry; do
   mysql -u root -e "CREATE DATABASE IF NOT EXISTS $service DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;"
   mysql -u root -e "GRANT ALL ON *.* TO '$service'@'localhost' IDENTIFIED BY 'password' WITH GRANT OPTION;"
   mysql -u root -e "GRANT ALL ON *.* TO '$service'@'$(hostname -f)' IDENTIFIED BY 'password' WITH GRANT OPTION;"
