@@ -19,8 +19,10 @@ function promptyn () {
 }
 
 #pre-req 
+# install EPEL
+rpm -ivh http://www.mirrorservice.org/sites/dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
 
-yum install krb5-server krb5-workstation krb5-libs rng-tools -y
+yum install krb5-server krb5-workstation krb5-libs rng-tools haveged -y
 # KB/000002527
 /etc/init.d/rngd start
 chkconfig rngd on
@@ -29,6 +31,12 @@ cat << EOF > /etc/sysconfig/rngd
 # Add extra options here
 EXTRAOPTIONS="-i -o /dev/random -r /dev/urandom -t 10 -W 2048"
 EOF
+
+/etc/init.d/rngd start
+/etc/init.d/haveged start
+# cat /dev/random | rngtest -c 1000
+# cat /proc/sys/kernel/random/entropy_avail
+
 
 #REALM=${1^^}
 REALM=LUNIX.LAN
