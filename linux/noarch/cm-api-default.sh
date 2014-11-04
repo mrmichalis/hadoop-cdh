@@ -18,6 +18,38 @@ curl -X PUT -H 'Content-Type:application/json' -u admin:admin -d '{
   } ]
 }' http://$(hostname -f):7180/api/v4/cm/config
 
+# Description: "LDAP Example"
+curl -X PUT -H 'Content-Type:application/json' -u admin:admin -d '{
+  "items" : [ {
+      "name" : "AUTH_BACKEND_ORDER",
+      "value" : "DB_THEN_LDAP"
+    }, {
+      "name" : "LDAP_BIND_DN",
+      "value" : "cn=Administrator,cn=users,dc=lunix,dc=lan"
+    }, {
+      "name" : "LDAP_BIND_PW",
+      "value" : "password"
+    }, {
+      "name" : "LDAP_GROUP_SEARCH_FILTER",
+      "value" : "memberOf=CN=Domain Admins,CN=Users,DC=LUNIX,DC=LAN"
+    }, {
+      "name" : "LDAP_URL",
+      "value" : "ldap://AD-HOST:389"
+    }, {
+      "name" : "LDAP_USER_GROUPS",
+      "value" : "Users,Domain Admins"
+    }, {
+      "name" : "LDAP_USER_SEARCH_BASE",
+      "value" : "CN=Users,DC=LUNIX,DC=LAN"
+    }, {
+      "name" : "LDAP_USER_SEARCH_FILTER",
+      "value" : "sAMAccountName={0}"
+    }, {
+      "name" : "NT_DOMAIN",
+      "value" : "LUNIX.LAN"
+    } ]
+}' http://$(hostname -f):7180/api/v4/cm/config
+
 curl -X PUT -H 'Content-Type:application/json' -u admin:admin -d '{
 "items" : [
   {
