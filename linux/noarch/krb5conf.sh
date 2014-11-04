@@ -20,9 +20,9 @@ function promptyn () {
 
 #pre-req 
 # install EPEL
-rpm -ivh http://www.mirrorservice.org/sites/dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
-
-yum install krb5-server krb5-workstation krb5-libs rng-tools haveged -y
+#rpm -ivh http://www.mirrorservice.org/sites/dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+# yum install -y haveged
+yum install krb5-server krb5-workstation krb5-libs rng-tools -y
 # KB/000002527
 /etc/init.d/rngd start
 chkconfig rngd on
