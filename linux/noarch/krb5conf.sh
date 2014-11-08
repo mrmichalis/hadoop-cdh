@@ -224,7 +224,7 @@ kadmin.local -q "addprinc -pw $PASSWRD hdfs@$REALM"
 kadmin.local -q "addprinc -pw $PASSWRD mko/admin"
 kadmin.local -q "addprinc -pw $PASSWRD mko@$REALM"
 kadmin.local -q "addprinc -pw $PASSWRD guest@$REALM"
-
+  
 echo "Generating cloudera-scm/admin principal for Cloudera Manager"
 kadmin.local >/dev/null <<EOF
 addprinc -randkey cloudera-scm/admin
@@ -254,3 +254,24 @@ EOF
 # userdel -f -r mko 
 # usermod -a -G root mko
 
+# Using a Cluster-Dedicated MIT KDC with Active Directory
+# http://www.cloudera.com/content/cloudera/en/documentation/core/latest/topics/cm_sg_kdc_def_domain_s2.html
+#
+#kadmin.local -q "addprinc -e """aes256-cts:normal aes128-cts:normal rc4-hmac:normal""" krbtgt/HADOOP.LUNIX.LAN@LUNIX.LAN"
+#[realms]
+#  LUNIX.LAN = {
+#    kdc = nrv01.lunix.lan:88
+#    admin_server = nrv01.lunix.lan:749
+#    default_domain = lunix.lan
+#  }
+#  HADOOP.LUNIX.LAN = {
+#    kdc = 192-168-88-209.lunix.lan:88
+#    admin_server = 192-168-88-209.lunix.lan:749
+#    default_domain = 192-168-88-209.lunix.lan
+#  }
+#  
+#[domain_realm]
+#  .192-168-88-209.lunix.lan = HADOOP.LUNIX.LAN
+#  192-168-88-209.lunix.lan = HADOOP.LUNIX.LAN
+#  .lunix.lan = LUNIX.LAN
+#  lunix.lan = LUNIX.LAN
