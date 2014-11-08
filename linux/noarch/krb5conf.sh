@@ -39,7 +39,7 @@ EOF
 
 
 #REALM=${1^^}
-REALM=LUNIX.LAN
+REALM=HADOOP.LUNIX.LAN
 FQDN=$(hostname -f)
 PASSWRD=Had00p
 
@@ -257,7 +257,9 @@ EOF
 # Using a Cluster-Dedicated MIT KDC with Active Directory
 # http://www.cloudera.com/content/cloudera/en/documentation/core/latest/topics/cm_sg_kdc_def_domain_s2.html
 #
-#kadmin.local -q "addprinc -e """aes256-cts:normal aes128-cts:normal rc4-hmac:normal""" krbtgt/HADOOP.LUNIX.LAN@LUNIX.LAN"
+#kadmin.local -q "addprinc -e "\""aes256-cts:normal aes128-cts:normal rc4-hmac:normal"\"" krbtgt/HADOOP.LUNIX.LAN@LUNIX.LAN"
+#[libdefaults]
+# default_realm = HADOOP.LUNIX.LAN
 #[realms]
 #  LUNIX.LAN = {
 #    kdc = nrv01.lunix.lan:88
