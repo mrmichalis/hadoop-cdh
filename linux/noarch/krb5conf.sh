@@ -208,7 +208,7 @@ sed -i "s/EXAMPLE.COM/$REALM/g" /etc/krb5.conf
 sed -i "s/EXAMPLE.COM/$REALM/g" /var/kerberos/krb5kdc/kadm5.acl
 sed -i "s/EXAMPLE.COM/$REALM/g" /var/kerberos/krb5kdc/kdc.conf
 )
- 
+
 (
 echo "Creating the KDC with password: $PASSWRD"
 kdb5_util -P "$PASSWRD" create -s
@@ -249,6 +249,8 @@ useradd mko -G supergroup,hdfs,hadoop,root -u 10002 -d /home/mko -m
 sudo -u hdfs hadoop fs -mkdir /user/mko
 sudo -u hdfs hadoop fs -chown mko:supergroup /user/mko
 mkdir -p /home/hdfs && chown -R hdfs:hdfs /home/hdfs
+
+yum install krb5-workstation krb5-libs -y
 EOF
 # curl -v -u mko:xxxxx --negotiate http://$(hostname -f):50070/dfshealth.jsp
 # userdel -f -r mko 
