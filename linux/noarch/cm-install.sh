@@ -59,10 +59,10 @@ function installJava() {
   else
     if !(command -v java >/dev/null 2>&1); then
       echo "* Oracle JDK 7u55 from CM..."
-      VER="oracle-j2sdk1.7-1.7.0+update55-2.x86_64"
+      VER="oracle-j2sdk1.7-1.7.0+update67-1.x86_64"
       wget http://archive.cloudera.com/cm5/redhat/6/x86_64/cm/5/RPMS/x86_64/${VER}.rpm -O /root/CDH/${VER}.rpm
       command -v java >/dev/null 2>&1 || rpm -ivh /root/CDH/${VER}.rpm
-      ln -s /usr/java/jdk1.7.0_55-cloudera/ /usr/java/latest
+      ln -s /usr/java/jdk1.7.0_67-cloudera/ /usr/java/latest
       ln -s /usr/java/latest /usr/java/default
       update-alternatives --install /usr/bin/java java /usr/java/default/bin/java 10
       echo "* Downloading Java Cryptography Extension (JCE 7) ..."
