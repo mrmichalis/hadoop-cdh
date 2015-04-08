@@ -92,3 +92,30 @@ curl -X POST -u admin:admin http://$(hostname -f):7180/api/v4/cm/service/command
 # curl -u admin:admin -X POST http://$(hostname -f):7180/api/v5/clusters/Cluster%201%20-%20CDH4/services/mapreduce1/roleCommands/refresh -H "Content-Type:application/json" -d '{"items":["mapreduce1-JOBTRACKER-6f46bf2f3bd625ffe9b041c0f725fbf4"]}'
 # curl -u admin:admin -X POST http://$(hostname -f):7180/api/v5/clusters/Cluster%201%20-%20CDH4/services/hdfs1/config -H "Content-Type:application/json" -d '{ "items" : [ {"name" : "dfs_replication","value" : "1"} ]}'
 
+# API Change Monitoring settings "Host Clock Offset Thresholds"# # for host with hostid 7eac56ed-4be0-4d88-b5b8-263438fa9ce4
+# curl -u admin:admin -X PUT -H "Content-Type:application/json" -d '{
+#   "items" : [ {
+#   "name" : "host_clock_offset_thresholds",
+#   "value" : "{\"warning\":\"10000\",\"critical\":\"200000\"}"
+#   } ]
+# }' http://$(hostname -f):7180/api/v8/hosts/7eac56ed-4be0-4d88-b5b8-263438fa9ce4/config
+# #python
+# api = ApiResource("cm-host")
+# host = api.get_host("7eac56ed-4be0-4d88-b5b8-263438fa9ce4")
+# host.update_config({"host_clock_offset_thresholds":"{\"warning\":\"60000\",\"critical\":\"20000\"}"})
+
+# # for each individual host on your cluster CM API
+# for h in api.get_all_hosts():
+#   h.update_config({"host_clock_offset_thresholds":"{\"warning\":\"10000\",\"critical\":\"200000\"}"})
+
+# # for host in listed in CM
+# curl -X PUT -H 'Content-Type:application/json' -u admin:admin -d '{
+#   "items" : [ {
+#     "name" : "host_clock_offset_thresholds",
+#     "value" : "{\"warning\":\"60000\",\"critical\":\"100000\"}"
+#   } ]
+# }' http://$(hostname -f):7180/api/v8/cm/allHosts/config
+# # python
+# cm = api.get_cloudera_manager()
+# cm.update_all_hosts_config({"host_clock_offset_thresholds":"{\"warning\":\"60000\",\"critical\":\"20000\"}"})
+
