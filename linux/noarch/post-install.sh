@@ -88,6 +88,9 @@ curl -L https://raw.githubusercontent.com/mrmichalis/hadoop-cdh/master/linux/noa
 # http://fredkschott.com/post/2014/02/git-log-is-so-2005/
 git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%C(bold blue)<%an>%Creset' --abbrev-commit"
 
+# https://github.com/draios/sysdig/wiki/How%20to%20Install%20Sysdig%20for%20Linux
+curl -s https://s3.amazonaws.com/download.draios.com/stable/install-sysdig | sudo bash
+
 # Zero out the free space to save space in the final image:
 #echo "* Zeroing out unused space ..."
 #dd if=/dev/zero of=/EMPTY bs=1M
