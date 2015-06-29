@@ -26,7 +26,8 @@ fi
 # [end of auto-screen snippet]
 
 #export JAVA_HOME=/usr/java/default
-#export PATH=$PATH:$JAVA_HOME/bin;$JAVA_HOME/jre/bin
+source /usr/lib64/cmf/service/common/cloudera-config.sh && locate_java_home
+export PATH=$PATH:$JAVA_HOME/bin;$JAVA_HOME/jre/bin
 EOF
 
 function installPdsh() {
