@@ -40,7 +40,7 @@ done
 
 if [[ ! -e "/usr/share/java/mysql-connector-java.jar" ]];then
   echo "* Install MySQL Connector ..."
-  MYSQL_VER=5.1.30
+  MYSQL_VER=5.1.38
   curl -L http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-$MYSQL_VER.tar.gz | tar xzv
   [[ -d "/usr/share/java/" && ! -e "/usr/share/java/mysql-connector-java.jar" ]] && cp /root/CDH/mysql-connector-java-$MYSQL_VER/mysql-connector-java-$MYSQL_VER-bin.jar /usr/share/java/mysql-connector-java.jar
   [[ -d "/opt/cloudera/parcels/CDH/lib/hive/lib/" && ! -e "/opt/cloudera/parcels/CDH/lib/hive/lib/mysql-connector-java.jar" ]] && ln -s /usr/share/java/mysql-connector-java.jar /opt/cloudera/parcels/CDH/lib/hive/lib/mysql-connector-java.jar      
