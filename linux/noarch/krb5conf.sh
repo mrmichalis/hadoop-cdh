@@ -39,9 +39,9 @@ EOF
 
 
 #REALM=${1^^}
-REALM=HADOOP.EXAMPLE.COM
-FQDN=$(hostname -f)
-PASSWRD=Had00p
+export REALM=HADOOP.EXAMPLE.COM
+export FQDN=$(hostname -f)
+export PASSWRD=Had00p
 
 function kerberos_cmapi() { 
   CLUSTER_NAME=$(curl -u admin:admin http://$(hostname -f):7180/api/v4/clusters/ -s | grep name | cut -d ':' -f 2 | sed 's/.*"\(.*\)"[^"]*$/\1/' | sed 's/ /%20/g')
