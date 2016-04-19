@@ -215,7 +215,7 @@ chkconfig krb5kdc on
 chkconfig kadmin on
 service krb5kdc start
 service kadmin start
-sleep 10 
+sleep 3 
 
 kadmin.local -q "addprinc -pw $PASSWRD root/admin"
 kadmin.local -q "addprinc -pw $PASSWRD hdfs@$REALM"
@@ -243,7 +243,7 @@ fi
 echo "Additional Kerberos post-conf"
 cat <<EOF
 groupadd supergroup -g 10001
-useradd mko -G supergroup,hdfs,hadoop,root -u 10002 -d /home/mko -m
+useradd mko -G supergroup,hdfs,hadoop -u 10002 -d /home/mko -m
 sudo -u hdfs hadoop fs -mkdir /user/mko
 sudo -u hdfs hadoop fs -chown mko:supergroup /user/mko
 mkdir -p /home/hdfs && chown -R hdfs:hdfs /home/hdfs
