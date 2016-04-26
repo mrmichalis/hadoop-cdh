@@ -244,9 +244,9 @@ echo "Additional Kerberos post-conf"
 cat <<EOF
 groupadd supergroup -g 10001
 useradd mko -G supergroup,hdfs,hadoop -u 10002 -d /home/mko -m
+mkdir -p /home/hdfs && chown -R hdfs:hdfs /home/hdfs
 sudo -u hdfs hadoop fs -mkdir /user/mko
 sudo -u hdfs hadoop fs -chown mko:supergroup /user/mko
-mkdir -p /home/hdfs && chown -R hdfs:hdfs /home/hdfs
 
 yum install krb5-workstation krb5-libs -y
 EOF
