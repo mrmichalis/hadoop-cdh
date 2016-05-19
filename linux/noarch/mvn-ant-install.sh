@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-MVN_VER=3.3.9
-ANT_VER=1.9.7
+exoprt MVN_VER=3.3.9
+export ANT_VER=1.9.7
 
 #echo "Install Maven 2.2.1"
 #curl -L http://apache.mirror.anlx.net/maven/maven-2/2.2.1/binaries/apache-maven-2.2.1-bin.tar.gz -o apache-maven-2.2.1-bin.tar.gz
