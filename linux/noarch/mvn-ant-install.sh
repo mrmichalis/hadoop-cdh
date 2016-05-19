@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-exoprt MVN_VER=3.3.9
+export MVN_VER=3.3.9
 export ANT_VER=1.9.7
 
 #echo "Install Maven 2.2.1"
