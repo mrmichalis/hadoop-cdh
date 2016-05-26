@@ -24,3 +24,7 @@ echo "* Set MVN_HOME in /etc/profile.d/mvn.sh ..."
 echo 'export MVN_HOME=/usr/local/maven' > /etc/profile.d/mvn.sh
 echo 'export PATH=$MVN_HOME/bin:$PATH' >> /etc/profile.d/mvn.sh
 . /etc/profile.d/mvn.sh
+
+export MVN_HOME=/usr/local/maven
+export JAVA_HOME=$(ls -d /usr/java/jdk1.7*/ | tail -1)
+export PATH=$JAVA_HOME/bin:$MVN_HOME/bin:$PATH
