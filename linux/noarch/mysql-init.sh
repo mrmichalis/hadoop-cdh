@@ -5,6 +5,8 @@ https://mariadb.com/resources/blog/installing-mariadb-10-centos-7-rhel-7
 yum install -y mariadb-server
 
 service mysqld start
+systemctl start mariadb
+
 yum install -y expect
 expect -c " 
 set timeout 5
