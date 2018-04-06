@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 yum install -y mysql mysql-server mysql-libs
+_OR_ RHEL 7
+https://mariadb.com/resources/blog/installing-mariadb-10-centos-7-rhel-7
+yum install -y mariadb-server
 
 service mysqld start
 yum install -y expect
