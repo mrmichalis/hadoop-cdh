@@ -18,29 +18,6 @@ function promptyn () {
   done
 }
 
-#pre-req 
-# install EPEL
-#rpm -ivh http://www.mirrorservice.org/sites/dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
-# yum install -y haveged
-yum install krb5-server krb5-workstation krb5-libs rng-tools -y
-# KB/000002527
-chkconfig rngd on
-echo "Add EXTRAOPTIONS /etc/sysconfig/rngd"
-cat << EOF > /etc/sysconfig/rngd
-# Add extra options here
-EXTRAOPTIONS="-i -o /dev/random -r /dev/urandom -t 10 -W 2048"
-EOF
-/etc/init.d/rngd start
-/etc/init.d/haveged start
-# cat /dev/random | rngtest -c 1000
-# cat /proc/sys/kernel/random/entropy_avail
-
-
-#REALM=${1^^}
-export REALM=HADOOP.EXAMPLE.COM
-export FQDN=$(hostname -f)
-export PASSWRD=Had00p
-
 function kerberos_cmapi() { 
   CLUSTER_NAME=$(curl -u admin:admin http://$(hostname -f):7180/api/v4/clusters/ -s | grep name | cut -d ':' -f 2 | sed 's/.*"\(.*\)"[^"]*$/\1/' | sed 's/ /%20/g')
   HDFS_NAME=$(curl -u admin:admin http://$(hostname -f):7180/api/v4/clusters/${CLUSTER_NAME}/services -s | grep name | grep hdfs | cut -d ':' -f 2 | sed 's/.*"\(.*\)"[^"]*$/\1/')
@@ -193,6 +170,28 @@ function kerberos_cmapi() {
 
 }
 
+#pre-req 
+# install EPEL
+#rpm -ivh http://www.mirrorservice.org/sites/dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+# yum install -y haveged
+yum install krb5-server krb5-workstation krb5-libs rng-tools -y
+# KB/000002527
+chkconfig rngd on
+echo "Add EXTRAOPTIONS /etc/sysconfig/rngd"
+cat << EOF > /etc/sysconfig/rngd
+# Add extra options here
+EXTRAOPTIONS="-i -o /dev/random -r /dev/urandom -t 10 -W 2048"
+EOF
+/etc/init.d/rngd start
+/etc/init.d/haveged start
+# cat /dev/random | rngtest -c 1000
+# cat /proc/sys/kernel/random/entropy_avail
+
+
+#REALM=${1^^}
+export REALM=HADOOP.EXAMPLE.COM
+export FQDN=$(hostname -f)
+export PASSWRD=Had00p
 (
 TIMESTAMP=$(date "+%Y%m%d_%H%M%S")
 cp /etc/krb5.conf /etc/krb5.conf.backup.$TIMESTAMP
@@ -215,7 +214,9 @@ chkconfig krb5kdc on
 chkconfig kadmin on
 service krb5kdc start
 service kadmin start
-sleep 3 
+_OR_
+systemctl start kadmin
+systemctl start krb5kdc
 
 kadmin.local -q "addprinc -pw $PASSWRD root/admin"
 kadmin.local -q "addprinc -pw $PASSWRD hdfs@$REALM"
